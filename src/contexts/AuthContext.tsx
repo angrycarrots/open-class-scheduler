@@ -30,6 +30,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         fetchUserProfile(session.user);
       }
       setLoading(false);
+    }).catch(err => {
+      console.error('Error getting initial session:', err);
+      setLoading(false);
     });
 
     // Listen for auth changes
@@ -49,29 +52,46 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const fetchUserProfile = async (supabaseUser: SupabaseUser) => {
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', supabaseUser.id)
-        .single();
+      // Use direct fetch to avoid localhost issues
+      const response = await fetch(`http://127.0.0.1:54321/rest/v1/profiles?id=eq.${supabaseUser.id}&select=*`, {
+        headers: {
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+          'Content-Type': 'application/json'
+        }
+      });
 
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching user profile:', error);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
+      const data = await response.json();
+      const profileData = data[0]; // Get first (and only) profile
 
       const userProfile: User = {
         id: supabaseUser.id,
         email: supabaseUser.email || '',
-        phone: data?.phone || undefined,
-        full_name: data?.full_name || undefined,
-        avatar_url: data?.avatar_url || 'avatar.png',
+        phone: profileData?.phone || undefined,
+        full_name: profileData?.full_name || undefined,
+        avatar_url: profileData?.avatar_url || 'avatar.png',
         created_at: supabaseUser.created_at,
-        updated_at: data?.updated_at || supabaseUser.created_at,
+        updated_at: profileData?.updated_at || supabaseUser.created_at,
       };
 
       setUser(userProfile);
     } catch (error) {
       console.error('Error in fetchUserProfile:', error);
+      // Set user without profile data if fetch fails
+      const userProfile: User = {
+        id: supabaseUser.id,
+        email: supabaseUser.email || '',
+        phone: undefined,
+        full_name: undefined,
+        avatar_url: 'avatar.png',
+        created_at: supabaseUser.created_at,
+        updated_at: supabaseUser.created_at,
+      };
+      setUser(userProfile);
     }
   };
 
