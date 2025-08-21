@@ -138,33 +138,33 @@ export const ClassListing: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+      <header className="bg-[#6B4E44] shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <h1 className="text-2xl font-bold text-gray-900">Yoga Classes</h1>
+            <h1 className="text-2xl font-bold text-white">Classes</h1>
             
             <div className="flex items-center space-x-4">
               {user ? (
                 <>
                   <button
                     onClick={handleProfile}
-                    className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                    className="text-white hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium"
                   >
                     Profile
                   </button>
                   {user.email === 'admin@example.com' && (
                     <button
                       onClick={handleAdmin}
-                      className="bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700"
+                      className="bg-[#A8A38F] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#9A9585]"
                     >
                       Admin
                     </button>
                   )}
                   <button
                     onClick={handleSignOut}
-                    className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                    className="text-white hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium"
                   >
                     Sign Out
                   </button>
@@ -172,9 +172,9 @@ export const ClassListing: React.FC = () => {
               ) : (
                 <button
                   onClick={handleLogin}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700"
+                  className="text-white hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium flex items-center"
                 >
-                  Login
+                  Login →
                 </button>
               )}
             </div>
@@ -182,20 +182,73 @@ export const ClassListing: React.FC = () => {
         </div>
       </header>
 
+      {/* Filter Bar */}
+      <div className="bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 py-4">
+        <div className="max-w-7xl mx-auto flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
+            <select 
+              value={filters.instructor || 'all'}
+              onChange={(e) => {
+                const newFilters = { ...filters };
+                if (e.target.value === 'all') {
+                  delete newFilters.instructor;
+                } else {
+                  newFilters.instructor = e.target.value;
+                }
+                setFilters(newFilters);
+              }}
+              className="border border-gray-300 rounded-md px-3 py-2 text-sm bg-white"
+            >
+              <option value="all">All Classes</option>
+              {instructors.map(instructor => (
+                <option key={instructor} value={instructor}>{instructor}</option>
+              ))}
+            </select>
+            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+          
+          <div className="flex-1 max-w-md">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search classes..."
+                className="w-full border border-gray-300 rounded-md pl-3 pr-10 py-2 text-sm"
+                onChange={(e) => {
+                  // Add search functionality here if needed
+                }}
+              />
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-1">
+            <button className="text-gray-400 hover:text-gray-600">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+            <button className="text-gray-400 hover:text-gray-600">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         {error && (
           <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
             <p className="text-red-800">Failed to load classes</p>
           </div>
         )}
-
-        {/* Filters */}
-        <ClassFilters
-          filters={filters}
-          onFiltersChange={setFilters}
-          instructors={instructors}
-        />
 
         {filteredAndSortedClasses.length === 0 ? (
           <div className="text-center py-12">
@@ -213,7 +266,7 @@ export const ClassListing: React.FC = () => {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="space-y-0">
             {filteredAndSortedClasses.map((yogaClass) => (
               <ClassCard
                 key={yogaClass.id}

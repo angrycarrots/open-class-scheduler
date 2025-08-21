@@ -5,7 +5,11 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      lineClamp: {
+        2: '2',
+      }
+    },
   },
   plugins: [
     require('@tailwindcss/forms'),

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import type { YogaClass } from '../types';
-import { CalendarIcon, ClockIcon, UserIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline';
 
 interface ClassCardProps {
   yogaClass: YogaClass;
@@ -15,104 +14,109 @@ export const ClassCard: React.FC<ClassCardProps> = ({
   const [showDetails, setShowDetails] = useState(false);
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+    const date = new Date(dateString);
+    return {
+      day: date.getDate(),
+      dayName: date.toLocaleDateString('en-US', { weekday: 'short' }),
+      month: date.toLocaleDateString('en-US', { month: 'long' }),
+      time: date.toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+      })
+    };
   };
 
-  const formatTime = (timeString: string) => {
-    return new Date(timeString).toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-    });
+  const isTomorrow = (dateString: string) => {
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    const classDate = new Date(dateString);
+    return classDate.toDateString() === tomorrow.toDateString();
   };
 
-  const getEndTime = (startTime: string) => {
-    const start = new Date(startTime);
-    const end = new Date(start.getTime() + 60 * 60 * 1000); // Add 1 hour
-    return formatTime(end.toISOString());
-  };
+  const dateInfo = formatDate(yogaClass.start_time);
+  const tomorrow = isTomorrow(yogaClass.start_time);
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300">
-      <div className="p-6">
-        {/* Class Header */}
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              {yogaClass.name}
-            </h3>
-            <p className="text-gray-600 text-sm leading-relaxed">
-              {yogaClass.brief_description}
-            </p>
-          </div>
-          {yogaClass.is_cancelled && (
-            <span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-              Cancelled
-            </span>
-          )}
-        </div>
-
-        {/* Class Details */}
-        <div className="space-y-3 mb-4">
-          <div className="flex items-center text-sm text-gray-600">
-            <CalendarIcon className="h-4 w-4 mr-2" />
-            <span>{formatDate(yogaClass.start_time)}</span>
-          </div>
-          
-          <div className="flex items-center text-sm text-gray-600">
-            <ClockIcon className="h-4 w-4 mr-2" />
-            <span>
-              {formatTime(yogaClass.start_time)} - {getEndTime(yogaClass.start_time)}
-            </span>
-          </div>
-          
-          <div className="flex items-center text-sm text-gray-600">
-            <UserIcon className="h-4 w-4 mr-2" />
-            <span>{yogaClass.instructor}</span>
-          </div>
-          
-          <div className="flex items-center text-sm text-gray-600">
-            <CurrencyDollarIcon className="h-4 w-4 mr-2" />
-            <span>${yogaClass.price}</span>
+    <div className="border-b border-gray-200 py-6">
+      <div className="flex">
+        {/* Left Column - Date & Time */}
+        <div className="w-24 flex-shrink-0 mr-6">
+          <div className="text-center">
+            <div className="text-3xl font-bold text-gray-900">{dateInfo.day}</div>
+            <div className="text-sm text-gray-600">{dateInfo.dayName}</div>
+            <div className="text-sm text-gray-600">{dateInfo.month}</div>
+            {tomorrow && (
+              <div className="mt-1">
+                <span className="inline-block bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+                  Tomorrow
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Expandable Details */}
-        <div className="mb-4">
-          <button
-            onClick={() => setShowDetails(!showDetails)}
-            className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
-          >
-            {showDetails ? 'Hide Details' : 'Show Details'}
-          </button>
-          
-          {showDetails && (
-            <div className="mt-3 p-4 bg-gray-50 rounded-md">
-              <p className="text-gray-700 text-sm leading-relaxed">
-                {yogaClass.full_description}
-              </p>
+        {/* Right Column - Class Details & Action */}
+        <div className="flex-1 flex justify-between items-start">
+          <div className="flex-1">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                  {yogaClass.name}
+                </h3>
+                <p className="text-sm text-gray-600 mb-2 line-clamp-2">
+                  {yogaClass.brief_description}
+                </p>
+                
+                <div className="flex items-center text-sm text-gray-500 mb-1">
+                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  {yogaClass.instructor}
+                </div>
+                
+                <div className="text-sm text-gray-500">
+                  ${yogaClass.price}
+                </div>
+              </div>
+              
+              <div className="text-right ml-4">
+                <div className="text-sm text-gray-600 mb-2">{dateInfo.time}</div>
+                <button
+                  onClick={() => setShowDetails(!showDetails)}
+                  className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                >
+                  &gt; Details
+                </button>
+              </div>
             </div>
-          )}
-        </div>
 
-        {/* Register Button */}
-        <div className="flex justify-end">
-          <button
-            onClick={() => onRegister(yogaClass.id)}
-            disabled={yogaClass.is_cancelled}
-            className={`px-6 py-2 rounded-md font-medium transition-colors ${
-              yogaClass.is_cancelled
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
-            }`}
-          >
-            {yogaClass.is_cancelled ? 'Cancelled' : 'Register'}
-          </button>
+            {/* Expandable Details */}
+            {showDetails && (
+              <div className="mt-4 p-4 bg-gray-50 rounded-md">
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  {yogaClass.full_description}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Register Button */}
+          <div className="ml-6 flex-shrink-0">
+            <button
+              onClick={() => onRegister(yogaClass.id)}
+              disabled={yogaClass.is_cancelled}
+              className={`px-6 py-2 rounded font-medium transition-colors ${
+                yogaClass.is_cancelled
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-[#A8A38F] text-white hover:bg-[#9A9585] focus:outline-none focus:ring-2 focus:ring-[#A8A38F] focus:ring-offset-2'
+              }`}
+            >
+              {yogaClass.is_cancelled ? 'CANCELLED' : 'REGISTER'}
+            </button>
+          </div>
         </div>
       </div>
     </div>
