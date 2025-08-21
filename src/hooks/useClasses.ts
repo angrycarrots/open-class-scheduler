@@ -7,30 +7,13 @@ export const useClasses = () => {
   return useQuery({
     queryKey: ['classes'],
     queryFn: async (): Promise<YogaClass[]> => {
-      console.log('🔍 Fetching classes from Supabase...');
-      console.log('🔗 URL:', import.meta.env.VITE_SUPABASE_URL);
-      
-      try {
-        const startTime = Date.now();
-        
-        const { data, error } = await supabase
-          .from(TABLES.CLASSES)
-          .select('*')
-          .order('start_time', { ascending: true });
-        
-        const endTime = Date.now();
-        console.log(`⏱️ Query took ${endTime - startTime}ms`);
-        
-        if (error) {
-          console.error('❌ Supabase error:', error);
-          throw error;
-        }
-        
-        return data || [];
-      } catch (err) {
-        console.error('❌ Query error:', err);
-        throw err;
-      }
+      const { data, error } = await supabase
+        .from(TABLES.CLASSES)
+        .select('*')
+        .order('start_time', { ascending: true });
+
+      if (error) throw error;
+      return (data as YogaClass[]) || [];
     },
     retry: 1,
     retryDelay: 1000,
@@ -155,43 +138,4 @@ export const useCancelClass = () => {
   });
 };
 
-// Duplicate a class
-export const useDuplicateClass = () => {
-  const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async (classId: string): Promise<YogaClass> => {
-      // First, get the original class
-      const { data: originalClass, error: fetchError } = await supabase
-        .from(TABLES.CLASSES)
-        .select('*')
-        .eq('id', classId)
-        .single();
-
-      if (fetchError) throw fetchError;
-
-      // Create a new class with the same data but without start_time
-      const { name, brief_description, full_description, instructor, price, weekly_repeat } = originalClass;
-      
-      const { data, error } = await supabase
-        .from(TABLES.CLASSES)
-        .insert({
-          name,
-          brief_description,
-          full_description,
-          instructor,
-          price,
-          weekly_repeat,
-          // start_time will be set by the user in the form
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['classes'] });
-    },
-  });
-};

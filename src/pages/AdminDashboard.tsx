@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useClasses } from '../hooks/useClasses';
-import { useCreateClass, useUpdateClass, useDeleteClass, useCancelClass, useDuplicateClass } from '../hooks/useClasses';
+import { useCreateClass, useUpdateClass, useDeleteClass, useCancelClass } from '../hooks/useClasses';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -43,7 +43,6 @@ export const AdminDashboard: React.FC = () => {
   const updateClass = useUpdateClass();
   const deleteClass = useDeleteClass();
   const cancelClass = useCancelClass();
-  const duplicateClass = useDuplicateClass();
 
   const [isCreating, setIsCreating] = useState(false);
   const [editingClass, setEditingClass] = useState<string | null>(null);
@@ -103,13 +102,23 @@ export const AdminDashboard: React.FC = () => {
     }
   };
 
-  const handleDuplicate = async (classId: string) => {
-    try {
-      await duplicateClass.mutateAsync(classId);
-      setFormSuccess('Class duplicated successfully!');
-      setTimeout(() => setFormSuccess(null), 3000);
-    } catch {
-      setFormError('Failed to duplicate class');
+  const handleDuplicate = (classId: string) => {
+    const yogaClass = classes.find(c => c.id === classId);
+    if (yogaClass) {
+      setIsCreating(true);
+      setEditingClass(null);
+      form.reset({
+        name: yogaClass.name,
+        brief_description: yogaClass.brief_description,
+        full_description: yogaClass.full_description,
+        instructor: yogaClass.instructor,
+        start_time: '', // Reset start time so user can set new time
+        price: yogaClass.price,
+        weekly_repeat: yogaClass.weekly_repeat,
+      });
+      setFormError(null);
+      setFormSuccess('Class data copied to form. Please set a new start time and save.');
+      setTimeout(() => setFormSuccess(null), 5000);
     }
   };
 

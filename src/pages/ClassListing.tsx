@@ -223,7 +223,7 @@ export const ClassListing: React.FC = () => {
                 type="text"
                 placeholder="Search classes..."
                 className="w-full border border-gray-300 rounded-md pl-3 pr-10 py-2 text-sm"
-                onChange={(e) => {
+                onChange={() => {
                   // Add search functionality here if needed
                 }}
               />
