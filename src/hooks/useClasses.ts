@@ -7,12 +7,19 @@ export const useClasses = () => {
   return useQuery({
     queryKey: ['classes'],
     queryFn: async (): Promise<YogaClass[]> => {
-      const { data, error } = await supabase
-        .from(TABLES.CLASSES)
-        .select('*')
-        .order('start_time', { ascending: true });
-
-      if (error) throw error;
+      const response = await fetch('http://127.0.0.1:54321/rest/v1/yoga_classes?select=*', {
+        headers: {
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
       return (data as YogaClass[]) || [];
     },
     retry: 1,
