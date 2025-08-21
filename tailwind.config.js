@@ -6,8 +6,10 @@ export default {
   ],
   theme: {
     extend: {
-      lineClamp: {
-        2: '2',
+      colors: {
+        'header-brown': '#6B4E44',
+        'button-khaki': '#A8A38F',
+        'button-khaki-hover': '#9A9585',
       }
     },
   },

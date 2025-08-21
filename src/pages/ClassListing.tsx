@@ -1,10 +1,18 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ClassCard } from '../components/ClassCard';
-import { ClassFilters, type FilterOptions } from '../components/ClassFilters';
 import { useAuth } from '../contexts/AuthContext';
 import { useClasses } from '../hooks/useClasses';
 import { PlusIcon } from '@heroicons/react/24/outline';
+
+// Define FilterOptions type locally since we removed the import
+type FilterOptions = {
+  instructor?: string;
+  priceRange?: 'low' | 'medium' | 'high';
+  dateRange?: 'today' | 'week' | 'month';
+  sortBy?: 'date' | 'price' | 'name';
+  sortOrder?: 'asc' | 'desc';
+};
 
 export const ClassListing: React.FC = () => {
   const { user, signOut } = useAuth();
@@ -128,9 +136,9 @@ export const ClassListing: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#6B4E44] mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading classes...</p>
         </div>
       </div>
@@ -143,7 +151,7 @@ export const ClassListing: React.FC = () => {
       <header className="bg-[#6B4E44] shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <h1 className="text-2xl font-bold text-white">Classes</h1>
+            <h1 className="text-2xl font-bold text-white">Yoga Classes</h1>
             
             <div className="flex items-center space-x-4">
               {user ? (
@@ -204,9 +212,7 @@ export const ClassListing: React.FC = () => {
                 <option key={instructor} value={instructor}>{instructor}</option>
               ))}
             </select>
-            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
+            <span className="text-gray-400">▼</span>
           </div>
           
           <div className="flex-1 max-w-md">
@@ -226,24 +232,11 @@ export const ClassListing: React.FC = () => {
               </div>
             </div>
           </div>
-          
-          <div className="flex items-center space-x-1">
-            <button className="text-gray-400 hover:text-gray-600">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-            <button className="text-gray-400 hover:text-gray-600">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      {/* Class List */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {error && (
           <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
             <p className="text-red-800">Failed to load classes</p>
@@ -277,7 +270,7 @@ export const ClassListing: React.FC = () => {
             ))}
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 };
