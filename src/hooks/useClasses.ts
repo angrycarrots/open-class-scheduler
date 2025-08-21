@@ -7,15 +7,35 @@ export const useClasses = () => {
   return useQuery({
     queryKey: ['classes'],
     queryFn: async (): Promise<YogaClass[]> => {
-      const { data, error } = await supabase
-        .from(TABLES.CLASSES)
-        .select('*')
-        .gte('start_time', new Date().toISOString())
-        .order('start_time', { ascending: true });
-
-      if (error) throw error;
-      return data || [];
+      console.log('🔍 Fetching classes from Supabase...');
+      console.log('🔗 URL:', import.meta.env.VITE_SUPABASE_URL);
+      
+      try {
+        const startTime = Date.now();
+        
+        const { data, error } = await supabase
+          .from(TABLES.CLASSES)
+          .select('*')
+          .order('start_time', { ascending: true });
+        
+        const endTime = Date.now();
+        console.log(`⏱️ Query took ${endTime - startTime}ms`);
+        
+        if (error) {
+          console.error('❌ Supabase error:', error);
+          throw error;
+        }
+        
+        return data || [];
+      } catch (err) {
+        console.error('❌ Query error:', err);
+        throw err;
+      }
     },
+    retry: 1,
+    retryDelay: 1000,
+    staleTime: 0, // Always fetch fresh data
+    cacheTime: 0, // Don't cache
   });
 };
 

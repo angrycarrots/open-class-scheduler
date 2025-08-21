@@ -20,6 +20,8 @@ export const ClassListing: React.FC = () => {
   const { data: classes = [], isLoading: loading, error } = useClasses();
   const [filters, setFilters] = useState<FilterOptions>({});
 
+
+
   const handleRegister = (classId: string) => {
     if (!user) {
       // Redirect to login/register page

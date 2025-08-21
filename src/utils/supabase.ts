@@ -7,7 +7,10 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Ensure we use 127.0.0.1 instead of localhost for local development
+const normalizedUrl = supabaseUrl.replace('localhost', '127.0.0.1');
+
+export const supabase = createClient(normalizedUrl, supabaseAnonKey);
 
 // Database table names
 export const TABLES = {
