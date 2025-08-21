@@ -1,219 +1,242 @@
-# Yoga Class Scheduling System
+# 🧘‍♀️ Yoga Class Scheduling System
 
-A comprehensive React-based yoga class scheduling system with authentication, payment processing, and admin functionality.
+A comprehensive React-based yoga class scheduling system with authentication, payment processing, and admin functionality. Built with modern web technologies and a focus on user experience.
 
-## Features
+## ✨ Features
 
-- **User Authentication**: Sign up, sign in, and profile management with Supabase
-- **Class Listing**: View available yoga classes with expandable details
-- **Class Registration**: Register for classes with Square payment integration
-- **Admin Panel**: Create, edit, duplicate, cancel, and delete classes
-- **SMS Notifications**: Confirmation messages for registrations and new users
-- **Responsive Design**: Mobile-friendly interface with Tailwind CSS
+### 🎯 Core Functionality
+- **User Authentication**: Secure registration, login, and profile management
+- **Class Browsing**: View classes with advanced filtering and sorting
+- **Class Registration**: Register for classes with adjustable payment amounts
+- **Admin Dashboard**: Complete class management system for administrators
+- **Responsive Design**: Mobile-first design that works on all devices
 
-## Tech Stack
+### 🔐 Authentication & Security
+- Supabase authentication with email/password
+- Row Level Security (RLS) policies
+- Protected routes for admin access
+- User profile management with avatar support
 
-- **Frontend**: React 18 with TypeScript
-- **Styling**: Tailwind CSS
-- **Authentication**: Supabase Auth
-- **Database**: Supabase PostgreSQL
-- **Payments**: Square API
-- **Forms**: React Hook Form with Zod validation
-- **Routing**: React Router DOM
-- **State Management**: React Query
+### 📅 Class Management
+- Create, edit, duplicate, cancel, and delete classes
+- Weekly repeat functionality (0-26 weeks)
+- Instructor assignment and scheduling
+- Price management and payment tracking
 
-## Prerequisites
+### 👥 User Management
+- Attendee tracking and management
+- Registration history and payment status
+- SMS confirmation system (ready for integration)
+- User profile customization
 
+## 🛠️ Tech Stack
+
+### Frontend
+- **React 18** with TypeScript for type safety
+- **Vite** for fast development and building
+- **Tailwind CSS** for responsive styling
+- **React Router DOM** for client-side routing
+- **React Hook Form** with Zod validation
+- **React Query** for data fetching and caching
+
+### Backend
+- **Supabase** for database and authentication
+- **PostgreSQL** with Row Level Security
+- **Real-time subscriptions** for live updates
+
+### Development Tools
+- **ESLint** for code quality
+- **TypeScript** for type safety
+- **PostCSS** for CSS processing
+
+## 🚀 Quick Start
+
+### Prerequisites
 - Node.js 18+ and npm
-- Supabase account
-- Square Developer account (for payments)
-- SMS service account (for notifications)
+- Docker Desktop (for local Supabase development)
+- Git
 
-## Setup Instructions
+### Installation
 
-### 1. Clone and Install Dependencies
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/angrycarrots/yoga-class-scheduler.git
+   cd yoga-class-scheduler
+   ```
 
-```bash
-git clone <repository-url>
-cd yoga_c
-npm install
-```
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-### 2. Environment Configuration
+3. **Set up environment variables**
+   ```bash
+   cp env.template .env.local
+   # Edit .env.local with your Supabase credentials
+   ```
 
-Create a `.env` file in the root directory with the following variables:
+4. **Start Supabase (local development)**
+   ```bash
+   # Install Supabase CLI if not already installed
+   brew install supabase/tap/supabase
+   
+   # Start local Supabase
+   supabase start
+   
+   # Apply database schema
+   psql postgresql://postgres:postgres@127.0.0.1:54322/postgres -f supabase/schema.sql
+   ```
 
-```env
-# Supabase Configuration
-VITE_SUPABASE_URL=your_supabase_url_here
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key_here
+5. **Start the development server**
+   ```bash
+   npm run dev
+   ```
 
-# Square API Configuration (for payments)
-VITE_SQUARE_APPLICATION_ID=your_square_application_id_here
-VITE_SQUARE_LOCATION_ID=your_square_location_id_here
+6. **Open your browser**
+   - App: http://localhost:5173
+   - Supabase Studio: http://127.0.0.1:54323
 
-# SMS Service Configuration (for notifications)
-VITE_SMS_API_KEY=your_sms_api_key_here
-VITE_SMS_PHONE_NUMBER=your_sms_phone_number_here
-```
-
-### 3. Supabase Database Setup
-
-1. Create a new Supabase project
-2. Run the following SQL in your Supabase SQL editor:
-
-```sql
--- Create profiles table
-CREATE TABLE profiles (
-  id UUID REFERENCES auth.users(id) PRIMARY KEY,
-  full_name TEXT,
-  avatar_url TEXT DEFAULT 'avatar.png',
-  phone TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Create yoga_classes table
-CREATE TABLE yoga_classes (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  name TEXT NOT NULL,
-  brief_description TEXT NOT NULL,
-  full_description TEXT NOT NULL,
-  instructor TEXT NOT NULL DEFAULT 'Michael',
-  start_time TIMESTAMP WITH TIME ZONE NOT NULL,
-  end_time TIMESTAMP WITH TIME ZONE NOT NULL,
-  price DECIMAL(10,2) NOT NULL,
-  weekly_repeat INTEGER DEFAULT 0 CHECK (weekly_repeat >= 0 AND weekly_repeat <= 26),
-  is_cancelled BOOLEAN DEFAULT FALSE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Create class_registrations table
-CREATE TABLE class_registrations (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  class_id UUID REFERENCES yoga_classes(id) ON DELETE CASCADE,
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  payment_amount DECIMAL(10,2) NOT NULL,
-  payment_status TEXT DEFAULT 'pending' CHECK (payment_status IN ('pending', 'completed', 'failed')),
-  square_payment_id TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Enable Row Level Security
-ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE yoga_classes ENABLE ROW LEVEL SECURITY;
-ALTER TABLE class_registrations ENABLE ROW LEVEL SECURITY;
-
--- Create RLS policies
-CREATE POLICY "Users can view their own profile" ON profiles
-  FOR SELECT USING (auth.uid() = id);
-
-CREATE POLICY "Users can update their own profile" ON profiles
-  FOR UPDATE USING (auth.uid() = id);
-
-CREATE POLICY "Users can insert their own profile" ON profiles
-  FOR INSERT WITH CHECK (auth.uid() = id);
-
-CREATE POLICY "Anyone can view yoga classes" ON yoga_classes
-  FOR SELECT USING (true);
-
-CREATE POLICY "Admin can manage yoga classes" ON yoga_classes
-  FOR ALL USING (auth.jwt() ->> 'email' = 'admin@example.com');
-
-CREATE POLICY "Users can view their own registrations" ON class_registrations
-  FOR SELECT USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can create their own registrations" ON class_registrations
-  FOR INSERT WITH CHECK (auth.uid() = user_id);
-
-CREATE POLICY "Admin can view all registrations" ON class_registrations
-  FOR SELECT USING (auth.jwt() ->> 'email' = 'admin@example.com');
-
--- Create function to handle user creation
-CREATE OR REPLACE FUNCTION handle_new_user()
-RETURNS TRIGGER AS $$
-BEGIN
-  INSERT INTO profiles (id, phone)
-  VALUES (NEW.id, NEW.raw_user_meta_data->>'phone');
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Create trigger for new user creation
-CREATE TRIGGER on_auth_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION handle_new_user();
-```
-
-### 4. Start Development Server
-
-```bash
-npm run dev
-```
-
-The application will be available at `http://localhost:5173`
-
-## Project Structure
+## 📁 Project Structure
 
 ```
 src/
 ├── components/          # Reusable UI components
-│   └── ClassCard.tsx   # Individual class display card
+│   ├── ClassCard.tsx   # Individual class display card
+│   ├── ClassFilters.tsx # Filtering and sorting component
+│   ├── ProtectedRoute.tsx # Protected route component
+│   └── AttendeeModal.tsx # Attendee management modal
 ├── contexts/           # React contexts
 │   └── AuthContext.tsx # Authentication context
 ├── hooks/              # Custom React hooks
+│   ├── useClasses.ts   # Class data management hooks
+│   └── useRegistrations.ts # Registration management hooks
 ├── pages/              # Page components
 │   ├── Auth.tsx        # Authentication page
-│   └── ClassListing.tsx # Main class listing page
+│   ├── ClassListing.tsx # Main class listing page
+│   ├── ClassRegistration.tsx # Class registration page
+│   ├── Profile.tsx     # User profile page
+│   └── AdminDashboard.tsx # Admin dashboard
 ├── types/              # TypeScript type definitions
 │   └── index.ts        # Main type definitions
 ├── utils/              # Utility functions
-│   └── supabase.ts     # Supabase client configuration
+│   ├── supabase.ts     # Supabase client configuration
+│   ├── sms.ts          # SMS notification utilities
+│   └── weeklyRepeat.ts # Weekly repeat functionality
 └── App.tsx             # Main application component
 ```
 
-## Usage
+## 🔧 Environment Variables
 
-### For Users
-1. Visit the homepage to view available classes
-2. Click "Login" to sign in or create an account
-3. Click "Register" on any class to book it
-4. Complete payment through Square
-5. Receive SMS confirmation
+### Required Variables
+```env
+VITE_SUPABASE_URL=http://localhost:54321
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-### For Admins
-1. Sign in with admin credentials (admin@example.com)
-2. Click "Admin" button to access admin panel
-3. Create, edit, or manage classes
-4. View class registrations and attendees
+### Optional Variables (for Phase 5)
+```env
+# Square Payments API
+VITE_SQUARE_APPLICATION_ID=your-square-app-id
+VITE_SQUARE_LOCATION_ID=your-square-location-id
 
-## Development Status
+# SMS Service
+VITE_TWILIO_ACCOUNT_SID=your-twilio-account-sid
+VITE_TWILIO_AUTH_TOKEN=your-twilio-auth-token
+VITE_TWILIO_PHONE_NUMBER=your-twilio-phone-number
+```
 
-This is the initial implementation with the following completed:
+## 📊 Database Schema
 
-✅ Project setup and configuration  
-✅ Authentication system  
-✅ Class listing and display  
-✅ Basic routing  
-✅ TypeScript types  
-✅ Responsive design  
+### Tables
+- `profiles` - User profile information
+- `yoga_classes` - Class details and scheduling
+- `class_registrations` - Registration and payment tracking
 
-**Next Steps:**
-- [ ] Class registration and payment flow
-- [ ] Admin panel implementation
-- [ ] SMS notification integration
-- [ ] Profile management
-- [ ] Square API integration
+### Key Features
+- Row Level Security (RLS) policies
+- Automatic profile creation on user signup
+- Updated timestamps triggers
+- Sample data for testing
 
-## Contributing
+## 🎮 Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run lint` - Run ESLint
+- `npm run preview` - Preview production build
+
+## 🧪 Testing
+
+The project includes comprehensive testing:
+- Database connection tests
+- Authentication system tests
+- Component functionality tests
+- Build process verification
+
+Run tests with:
+```bash
+# All tests are integrated into the development workflow
+npm run dev
+# Then visit http://localhost:5173 to test the application
+```
+
+## 🚀 Deployment
+
+### Local Development
+- Development server: http://localhost:5173
+- Supabase API: http://127.0.0.1:54321
+- Supabase Studio: http://127.0.0.1:54323
+
+### Production
+1. Set up a Supabase project
+2. Update environment variables
+3. Deploy to your preferred hosting platform
+4. Configure custom domain (optional)
+
+## 📈 Current Status
+
+### ✅ Completed Features
+- **Phase 1**: Project Setup & Foundation
+- **Phase 2**: Authentication & User Management
+- **Phase 3**: Core Components
+- **Phase 4**: Admin Functionality
+- **Supabase Setup**: Complete local development environment
+
+### 🔄 In Progress
+- **Phase 5**: Payment Integration & Polish
+
+### 📋 Roadmap
+- Square payment integration
+- Enhanced user experience
+- Performance optimization
+- Production deployment
+
+## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## License
+## 📄 License
 
-MIT License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- [Supabase](https://supabase.com) for the amazing backend-as-a-service
+- [React](https://reactjs.org) for the frontend framework
+- [Tailwind CSS](https://tailwindcss.com) for the utility-first CSS framework
+- [Vite](https://vitejs.dev) for the build tool
+
+## 📞 Support
+
+If you have any questions or need help:
+- Open an issue on GitHub
+- Check the [Supabase Setup Guide](SUPABASE_SETUP.md)
+- Review the [Development Plan](PLAN.md)
+
+---
+
+**Built with ❤️ using React, TypeScript, and Supabase** 
