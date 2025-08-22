@@ -1,5 +1,5 @@
 import React from 'react';
-import { XMarkIcon, UserIcon, EnvelopeIcon, PhoneIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, UserIcon, EnvelopeIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline';
 import { useClassRegistrations } from '../hooks/useRegistrations';
 
 interface AttendeeModalProps {
@@ -85,12 +85,7 @@ export const AttendeeModal: React.FC<AttendeeModalProps> = ({ classId, onClose }
                             <EnvelopeIcon className="h-4 w-4 mr-1 text-gray-400" />
                             {registration.profiles?.email || 'No email'}
                           </div>
-                          {registration.profiles?.phone && (
-                            <div className="flex items-center mt-1">
-                              <PhoneIcon className="h-4 w-4 mr-1 text-gray-400" />
-                              {registration.profiles.phone}
-                            </div>
-                          )}
+
                         </div>
                       </td>
                       <td className="px-4 py-4">

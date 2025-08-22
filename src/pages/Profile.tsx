@@ -121,9 +121,6 @@ export const Profile: React.FC = () => {
                   {user.full_name || 'Update your profile'}
                 </h2>
                 <p className="text-gray-600">{user.email}</p>
-                {user.phone && (
-                  <p className="text-gray-600">{user.phone}</p>
-                )}
               </div>
             </div>
 

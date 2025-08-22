@@ -2,7 +2,8 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import { supabase } from '../utils/supabase';
 import type { User, AuthContextType } from '../types';
-import { sendNewUserConfirmation } from '../utils/sms';
+// TODO: Import email service when implemented
+// import { sendWaiverEmail } from '../utils/email';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -71,7 +72,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const userProfile: User = {
         id: supabaseUser.id,
         email: supabaseUser.email || '',
-        phone: profileData?.phone || undefined,
         full_name: profileData?.full_name || undefined,
         avatar_url: profileData?.avatar_url || 'avatar.png',
         created_at: supabaseUser.created_at,
@@ -85,7 +85,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const userProfile: User = {
         id: supabaseUser.id,
         email: supabaseUser.email || '',
-        phone: undefined,
         full_name: undefined,
         avatar_url: 'avatar.png',
         created_at: supabaseUser.created_at,
@@ -103,25 +102,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (error) throw error;
   };
 
-  const signUp = async (email: string, password: string, phone: string) => {
+  const signUp = async (email: string, password: string) => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        data: {
-          phone,
-        },
-      },
     });
     if (error) throw error;
 
-    // Send SMS confirmation to new user
-    try {
-      await sendNewUserConfirmation(phone, email);
-    } catch (smsError) {
-      console.error('Failed to send SMS confirmation:', smsError);
-      // Don't throw error here as user registration was successful
-    }
+    // TODO: Send waiver email to new user when email service is implemented
+    // try {
+    //   await sendWaiverEmail(email);
+    // } catch (emailError) {
+    //   console.error('Failed to send waiver email:', emailError);
+    //   // Don't throw error here as user registration was successful
+    // }
   };
 
   const signOut = async () => {
@@ -138,7 +132,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         id: user.id,
         full_name: data.full_name,
         avatar_url: data.avatar_url,
-        phone: data.phone,
         updated_at: new Date().toISOString(),
       });
 

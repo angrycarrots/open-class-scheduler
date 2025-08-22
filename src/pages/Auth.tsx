@@ -14,7 +14,9 @@ const registerSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   confirmPassword: z.string(),
-  phone: z.string().min(10, 'Phone number must be at least 10 digits'),
+  waiverAgreed: z.boolean().refine(val => val === true, {
+    message: 'You must agree to the waiver terms to create an account',
+  }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
@@ -56,7 +58,7 @@ export const Auth: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      await signUp(data.email, data.password, data.phone);
+      await signUp(data.email, data.password);
       setError('Registration successful! Please check your email for verification.');
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to sign up';
@@ -148,19 +150,25 @@ export const Auth: React.FC = () => {
               </div>
 
               <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                  Phone number
-                </label>
-                <div className="mt-1">
-                  <input
-                    {...registerForm.register('phone')}
-                    type="tel"
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    placeholder="Enter your phone number"
-                  />
+                <div className="flex items-start">
+                  <div className="flex items-center h-5">
+                    <input
+                      {...registerForm.register('waiverAgreed')}
+                      type="checkbox"
+                      className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
+                    />
+                  </div>
+                  <div className="ml-3 text-sm">
+                    <label htmlFor="waiverAgreed" className="font-medium text-gray-700">
+                      I agree to the waiver terms
+                    </label>
+                    <p className="text-gray-500">
+                      By checking this box, you acknowledge that you have read and agree to our waiver terms.
+                    </p>
+                  </div>
                 </div>
-                {registerForm.formState.errors.phone && (
-                  <p className="mt-1 text-sm text-red-600">{registerForm.formState.errors.phone.message}</p>
+                {registerForm.formState.errors.waiverAgreed && (
+                  <p className="mt-1 text-sm text-red-600">{registerForm.formState.errors.waiverAgreed.message}</p>
                 )}
               </div>
 

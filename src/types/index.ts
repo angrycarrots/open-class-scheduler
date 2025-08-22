@@ -1,11 +1,28 @@
 export interface User {
   id: string;
   email: string;
-  phone?: string;
   full_name?: string;
   avatar_url?: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface Waiver {
+  id: string;
+  version: number;
+  title: string;
+  body_markdown: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UserWaiver {
+  id: string;
+  user_id: string;
+  waiver_id: string;
+  agreed_at: string;
+  waiver_snapshot_md: string;
 }
 
 export interface YogaClass {
@@ -36,7 +53,6 @@ export interface ClassRegistration {
     id: string;
     full_name?: string;
     email?: string;
-    phone?: string;
   };
 }
 
@@ -58,7 +74,7 @@ export interface AuthContextType {
   user: User | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, phone: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   updateProfile: (data: Partial<User>) => Promise<void>;
 }

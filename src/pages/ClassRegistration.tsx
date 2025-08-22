@@ -7,7 +7,8 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CalendarIcon, ClockIcon, UserIcon, CurrencyDollarIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
-import { sendRegistrationConfirmation } from '../utils/sms';
+// TODO: Import email service when implemented
+// import { sendRegistrationEmail } from '../utils/email';
 
 const registrationSchema = z.object({
   payment_amount: z.number()
@@ -87,22 +88,20 @@ export const ClassRegistration: React.FC = () => {
         // squarePaymentId: 'simulated-payment-id', // TODO: Add real Square payment ID
       });
 
-      // Send SMS confirmation
-      if (user.phone) {
-        try {
-          await sendRegistrationConfirmation(
-            user.phone,
-            yogaClass.name,
-            formatDate(yogaClass.start_time),
-            formatTime(yogaClass.start_time)
-          );
-        } catch (smsError) {
-          console.error('Failed to send SMS:', smsError);
-          // Don't fail registration if SMS fails
-        }
-      }
+      // TODO: Send email confirmation when email service is implemented
+      // try {
+      //   await sendRegistrationEmail(
+      //     user.email,
+      //     yogaClass.name,
+      //     formatDate(yogaClass.start_time),
+      //     formatTime(yogaClass.start_time)
+      //   );
+      // } catch (emailError) {
+      //   console.error('Failed to send email:', emailError);
+      //   // Don't fail registration if email fails
+      // }
 
-      setSuccess('Registration successful! You will receive a confirmation SMS shortly.');
+      setSuccess('Registration successful! You will receive a confirmation email shortly.');
       
       // Redirect to home after 3 seconds
       setTimeout(() => {
