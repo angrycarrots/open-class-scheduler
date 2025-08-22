@@ -44,3 +44,9 @@
 # Commit Discipline
 - Remove console.debug logs prior to commit (unless explicitly required).
 - Run `npm run lint` and ensure clean before pushing.
+
+# Documentation
+- Any database schema, migration, or integration change MUST be reflected in DEPLOYMENT.md the same day:
+  - Include which SQL files to run (e.g., schema.sql, waivers.sql) and order
+  - Add/update required env vars and provider notes
+  - Update verification steps and production checklist items accordingly
