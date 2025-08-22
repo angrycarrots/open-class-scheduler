@@ -103,7 +103,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
     });
@@ -116,6 +116,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     //   console.error('Failed to send waiver email:', emailError);
     //   // Don't throw error here as user registration was successful
     // }
+
+    return data.user;
   };
 
   const signOut = async () => {

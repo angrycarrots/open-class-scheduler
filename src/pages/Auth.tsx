@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useActiveWaiver, useCreateUserWaiver } from '../hooks/useWaivers';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -29,8 +30,13 @@ export const Auth: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showWaiver, setShowWaiver] = useState(false);
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
+  
+  // Fetch active waiver
+  const { data: activeWaiver, isLoading: waiverLoading } = useActiveWaiver();
+  const createUserWaiver = useCreateUserWaiver();
 
   const loginForm = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -58,7 +64,25 @@ export const Auth: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      await signUp(data.email, data.password);
+      
+      // Create user account
+      const user = await signUp(data.email, data.password);
+      
+      // Record waiver agreement if waiver exists and user was created
+      if (activeWaiver && user) {
+        try {
+          await createUserWaiver.mutateAsync({
+            user_id: user.id,
+            waiver_id: activeWaiver.id,
+            agreed_at: new Date().toISOString(),
+            waiver_snapshot_md: activeWaiver.body_markdown,
+          });
+        } catch (waiverError) {
+          console.error('Failed to record waiver agreement:', waiverError);
+          // Don't fail registration if waiver recording fails
+        }
+      }
+      
       setError('Registration successful! Please check your email for verification.');
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to sign up';
@@ -165,6 +189,15 @@ export const Auth: React.FC = () => {
                     <p className="text-gray-500">
                       By checking this box, you acknowledge that you have read and agree to our waiver terms.
                     </p>
+                    {activeWaiver && (
+                      <button
+                        type="button"
+                        onClick={() => setShowWaiver(true)}
+                        className="mt-2 text-blue-600 hover:text-blue-800 underline text-sm"
+                      >
+                        View waiver terms
+                      </button>
+                    )}
                   </div>
                 </div>
                 {registerForm.formState.errors.waiverAgreed && (
@@ -246,6 +279,40 @@ export const Auth: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Waiver Modal */}
+      {showWaiver && activeWaiver && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+            <div className="mt-3">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-medium text-gray-900">{activeWaiver.title}</h3>
+                <button
+                  onClick={() => setShowWaiver(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="mt-2 px-7 pt-6 pb-4">
+                <div className="text-sm text-gray-500 whitespace-pre-wrap max-h-96 overflow-y-auto">
+                  {activeWaiver.body_markdown}
+                </div>
+              </div>
+              <div className="items-center px-4 py-3">
+                <button
+                  onClick={() => setShowWaiver(false)}
+                  className="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
