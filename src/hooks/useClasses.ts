@@ -83,8 +83,13 @@ export const useCreateClass = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
-      return data[0] as YogaClass;
+      // POST requests don't always return data, so we'll return a minimal object
+      // The actual created data will be fetched by the query invalidation
+      return {
+        ...classData,
+        end_time: endTime.toISOString(),
+        id: 'temp-id', // This will be replaced when the query refreshes
+      } as YogaClass;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['classes'] });
@@ -115,8 +120,13 @@ export const useUpdateClass = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
-      return data[0] as YogaClass;
+      // PATCH requests don't always return data, so we'll return a minimal object
+      // The actual updated data will be fetched by the query invalidation
+      return {
+        id,
+        ...classData,
+        updated_at: new Date().toISOString(),
+      } as YogaClass;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['classes'] });
