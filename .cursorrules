@@ -35,6 +35,7 @@
 - When data seems stuck: 1) supabase status; 2) curl http://127.0.0.1:54321/rest/v1/yoga_classes?select=*; 3) inspect .env.local.
 - Do not commit .supabase/ or Docker artifacts.
 - Keep commits small; fix lint before push.
+- Prefer Docker services over installing on local OS (e.g., Inbucket, databases, etc.)
 
 # Files to Avoid Committing
 - .env, .env.local, any .env* files
