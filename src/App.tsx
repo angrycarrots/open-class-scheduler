@@ -6,6 +6,7 @@ import { Auth } from './pages/Auth';
 import { Profile } from './pages/Profile';
 import { ClassRegistration } from './pages/ClassRegistration';
 import { AdminDashboard } from './pages/AdminDashboard';
+import { AdminWaiver } from './pages/AdminWaiver';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import './App.css';
 
@@ -24,6 +25,7 @@ function App() {
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="/register/:classId" element={<ProtectedRoute><ClassRegistration /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
+              <Route path="/admin/waivers" element={<ProtectedRoute adminOnly><AdminWaiver /></ProtectedRoute>} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>

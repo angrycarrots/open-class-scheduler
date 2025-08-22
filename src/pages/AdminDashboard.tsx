@@ -250,13 +250,22 @@ export const AdminDashboard: React.FC = () => {
               </button>
               <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
             </div>
-            <button
-              onClick={handleCreateNew}
-              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center"
-            >
-              <PlusIcon className="h-4 w-4 mr-2" />
-              Create New Class
-            </button>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => navigate('/admin/waivers')}
+                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 flex items-center"
+              >
+                <DocumentDuplicateIcon className="h-4 w-4 mr-2" />
+                Manage Waivers
+              </button>
+              <button
+                onClick={handleCreateNew}
+                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center"
+              >
+                <PlusIcon className="h-4 w-4 mr-2" />
+                Create New Class
+              </button>
+            </div>
           </div>
         </div>
       </header>
