@@ -110,7 +110,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     // Send waiver email to new user
     try {
-      await sendWaiverEmail(email, email, 'Welcome to our yoga community!');
+      await sendWaiverEmail(email, email, 'Thank you for agreeing to our waiver terms. Please review the complete waiver terms below.');
     } catch (emailError) {
       console.error('Failed to send waiver email:', emailError);
       // Don't throw error here as user registration was successful

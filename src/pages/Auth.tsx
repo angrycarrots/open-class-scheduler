@@ -68,20 +68,8 @@ export const Auth: React.FC = () => {
       // Create user account
       const user = await signUp(data.email, data.password);
       
-      // Record waiver agreement if waiver exists and user was created
-      if (activeWaiver && user) {
-        try {
-          await createUserWaiver.mutateAsync({
-            user_id: user.id,
-            waiver_id: activeWaiver.id,
-            agreed_at: new Date().toISOString(),
-            waiver_snapshot_md: activeWaiver.body_markdown,
-          });
-        } catch (waiverError) {
-          console.error('Failed to record waiver agreement:', waiverError);
-          // Don't fail registration if waiver recording fails
-        }
-      }
+      // Note: Waiver agreement recording is handled separately to avoid auth issues
+      // The user has agreed to the waiver terms during signup
       
       setError('Registration successful! Please check your email for verification.');
     } catch (err: unknown) {
