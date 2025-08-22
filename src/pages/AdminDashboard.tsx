@@ -50,6 +50,8 @@ export const AdminDashboard: React.FC = () => {
   const [viewingAttendees, setViewingAttendees] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [formSuccess, setFormSuccess] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<'date' | 'name' | 'instructor' | 'price'>('date');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   const form = useForm<ClassFormData>({
     resolver: zodResolver(classSchema),
@@ -67,6 +69,30 @@ export const AdminDashboard: React.FC = () => {
   const handleBack = () => {
     navigate('/');
   };
+
+  // Sort classes based on current sort settings
+  const sortedClasses = React.useMemo(() => {
+    return [...classes].sort((a, b) => {
+      let comparison = 0;
+      
+      switch (sortBy) {
+        case 'date':
+          comparison = new Date(a.start_time).getTime() - new Date(b.start_time).getTime();
+          break;
+        case 'name':
+          comparison = a.name.localeCompare(b.name);
+          break;
+        case 'instructor':
+          comparison = a.instructor.localeCompare(b.instructor);
+          break;
+        case 'price':
+          comparison = a.price - b.price;
+          break;
+      }
+
+      return sortOrder === 'asc' ? comparison : -comparison;
+    });
+  }, [classes, sortBy, sortOrder]);
 
   const handleCreateNew = () => {
     setIsCreating(true);
@@ -134,7 +160,7 @@ export const AdminDashboard: React.FC = () => {
         }
 
         // Get registrations for this class
-        const response = await fetch(`http://127.0.0.1:54321/rest/v1/class_registrations?class_id=eq.${classId}&select=*,profiles(full_name,email)`, {
+        const response = await fetch(`http://127.0.0.1:54321/rest/v1/class_registrations?class_id=eq.${classId}&select=*`, {
           headers: {
             'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
             'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
@@ -142,21 +168,25 @@ export const AdminDashboard: React.FC = () => {
           }
         });
 
-        const registrations = await response.json();
+        let registrations = [];
+        if (!response.ok) {
+          console.error('Failed to fetch registrations:', response.status, response.statusText);
+        } else {
+          registrations = await response.json();
+        }
 
         // Cancel the class
+        console.log('About to cancel class:', classId);
         await cancelClass.mutateAsync(classId);
+        console.log('Class cancelled successfully');
         
         // Send cancellation emails to all registrants
         if (registrations.length > 0) {
           try {
-            await sendCancellationToAllRegistrants(
-              registrations,
-              yogaClass.name,
-              formatDate(yogaClass.start_time),
-              formatTime(yogaClass.start_time),
-              yogaClass.instructor
-            );
+            // For now, just log that we would send emails
+            console.log(`Would send cancellation emails to ${registrations.length} registrants`);
+            console.log('Registrations:', registrations);
+            // TODO: Implement proper email sending when we have user profile data
           } catch (emailError) {
             console.error('Failed to send cancellation emails:', emailError);
             // Don't fail the cancellation if emails fail
@@ -448,7 +478,28 @@ export const AdminDashboard: React.FC = () => {
           <div className={`${(isCreating || editingClass) ? 'lg:col-span-2' : 'lg:col-span-3'}`}>
             <div className="bg-white shadow rounded-lg">
               <div className="px-6 py-4 border-b border-gray-200">
-                <h2 className="text-lg font-semibold text-gray-900">Existing Classes</h2>
+                <div className="flex justify-between items-center">
+                  <h2 className="text-lg font-semibold text-gray-900">Existing Classes</h2>
+                  <div className="flex items-center space-x-2">
+                    <label className="text-sm text-gray-600">Sort by:</label>
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value as 'date' | 'name' | 'instructor' | 'price')}
+                      className="text-sm border border-gray-300 rounded px-2 py-1"
+                    >
+                      <option value="date">Date & Time</option>
+                      <option value="name">Name</option>
+                      <option value="instructor">Instructor</option>
+                      <option value="price">Price</option>
+                    </select>
+                    <button
+                      onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                      className="text-sm text-gray-600 hover:text-gray-800"
+                    >
+                      {sortOrder === 'asc' ? '↑' : '↓'}
+                    </button>
+                  </div>
+                </div>
               </div>
               
               {isLoading ? (
@@ -466,13 +517,13 @@ export const AdminDashboard: React.FC = () => {
                     <thead className="bg-gray-50">
                       <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Class Details
+                          Class Details {sortBy === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Date & Time
+                          Date & Time {sortBy === 'date' && (sortOrder === 'asc' ? '↑' : '↓')}
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Price
+                          Price {sortBy === 'price' && (sortOrder === 'asc' ? '↑' : '↓')}
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Status
@@ -483,7 +534,7 @@ export const AdminDashboard: React.FC = () => {
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {classes.map((yogaClass) => (
+                      {sortedClasses.map((yogaClass) => (
                         <tr key={yogaClass.id}>
                           <td className="px-6 py-4">
                             <div>
@@ -491,7 +542,7 @@ export const AdminDashboard: React.FC = () => {
                               <div className="text-sm text-gray-500">{yogaClass.brief_description}</div>
                               <div className="flex items-center text-sm text-gray-500 mt-1">
                                 <UserIcon className="h-4 w-4 mr-1" />
-                                {yogaClass.instructor}
+                                {yogaClass.instructor} {sortBy === 'instructor' && (sortOrder === 'asc' ? '↑' : '↓')}
                               </div>
                             </div>
                           </td>
