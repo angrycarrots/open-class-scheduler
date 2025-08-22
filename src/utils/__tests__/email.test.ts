@@ -53,13 +53,13 @@ describe('email utilities', () => {
         userName: 'Jane Smith',
         className: 'Deep Stretch',
         classDate: '2024-01-15',
-        instructor: 'Michael',
+        instructor: 'Sarah',
       }
 
       const result = renderTemplate(template, data)
       expect(result).toContain('Welcome Jane Smith')
       expect(result).toContain('Your class Deep Stretch on 2024-01-15 is confirmed.')
-      expect(result).toContain('Instructor: Michael')
+      expect(result).toContain('Instructor: Sarah')
     })
   })
 })

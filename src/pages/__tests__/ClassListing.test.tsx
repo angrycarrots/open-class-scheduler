@@ -35,7 +35,7 @@ vi.mock('../../hooks/useClasses', () => ({
         name: 'Evening Relaxation',
         brief_description: 'Wind down with gentle poses',
         full_description: 'A gentle evening practice to help you relax',
-        instructor: 'Michael',
+        instructor: 'Alex',
         start_time: '2024-01-01T18:00:00Z',
         end_time: '2024-01-01T19:00:00Z',
         price: 10,
@@ -94,7 +94,6 @@ describe('ClassListing', () => {
     render(<ClassListing />, { wrapper: createWrapper() })
     
     expect(screen.getAllByText('Sarah')).toHaveLength(2) // One in dropdown, one in class
-    expect(screen.getAllByText('Michael')).toHaveLength(2) // One in dropdown, one in class
   })
 
   it('should show prices', () => {

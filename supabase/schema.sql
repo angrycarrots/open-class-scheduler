@@ -18,7 +18,7 @@ CREATE TABLE yoga_classes (
   name TEXT NOT NULL,
   brief_description TEXT NOT NULL,
   full_description TEXT NOT NULL,
-  instructor TEXT NOT NULL DEFAULT 'Michael',
+  instructor TEXT NOT NULL DEFAULT 'Sarah',
   start_time TIMESTAMP WITH TIME ZONE NOT NULL,
   end_time TIMESTAMP WITH TIME ZONE NOT NULL,
   price DECIMAL(10,2) NOT NULL DEFAULT 10.00,
@@ -175,13 +175,13 @@ JOIN yoga_classes yc ON cr.class_id = yc.id;
 
 -- Insert sample data for testing
 INSERT INTO yoga_classes (name, brief_description, full_description, instructor, start_time, end_time, price, weekly_repeat) VALUES
-('Deep Stretch at the Rose Garden', 'Gentle stretching and flexibility work in a beautiful garden setting', 'A relaxing class focused on deep stretching and flexibility work. Perfect for releasing tension and improving range of motion. Held in the serene Rose Garden environment.', 'Michael', NOW() + INTERVAL '1 day', NOW() + INTERVAL '1 day' + INTERVAL '1 hour', 12.00, 0),
-('Moon Sequence at the Rose Garden', 'Evening yoga under the moonlight', 'A peaceful evening practice designed to help you unwind and connect with your inner self. This gentle flow is perfect for ending your day mindfully.', 'Michael', NOW() + INTERVAL '2 days', NOW() + INTERVAL '2 days' + INTERVAL '1 hour', 10.00, 0),
-('Sunrise Flow', 'Energizing morning practice to start your day', 'Begin your day with this invigorating morning flow that combines dynamic movement with mindful breathing. Perfect for building energy and focus for the day ahead.', 'Michael', NOW() + INTERVAL '3 days', NOW() + INTERVAL '3 days' + INTERVAL '1.5 hours', 15.00, 0),
-('Gentle Hatha', 'Traditional yoga practice for all levels', 'A traditional Hatha yoga class suitable for all levels. Focus on proper alignment, breathing, and mindful movement in a supportive environment.', 'Michael', NOW() + INTERVAL '4 days', NOW() + INTERVAL '4 days' + INTERVAL '1 hour', 8.00, 0),
-('Vinyasa Flow', 'Dynamic movement synchronized with breath', 'A dynamic and flowing practice that links movement with breath. This intermediate-level class builds strength, flexibility, and mindfulness.', 'Michael', NOW() + INTERVAL '5 days', NOW() + INTERVAL '5 days' + INTERVAL '1.5 hours', 12.00, 0),
-('Restorative Evening', 'Deep relaxation and stress relief', 'A deeply relaxing class using props to support the body in passive poses. Perfect for stress relief and recovery after a busy day.', 'Michael', NOW() + INTERVAL '6 days', NOW() + INTERVAL '6 days' + INTERVAL '1 hour', 10.00, 0),
-('Weekly Meditation', 'Mindfulness and meditation practice', 'A weekly meditation class combining breathing techniques, mindfulness practices, and guided meditation for stress reduction and mental clarity.', 'Michael', NOW() + INTERVAL '7 days', NOW() + INTERVAL '7 days' + INTERVAL '45 minutes', 8.00, 4);
+('Deep Stretch at the Rose Garden', 'Gentle stretching and flexibility work in a beautiful garden setting', 'A relaxing class focused on deep stretching and flexibility work. Perfect for releasing tension and improving range of motion. Held in the serene Rose Garden environment.', 'Sarah', NOW() + INTERVAL '1 day', NOW() + INTERVAL '1 day' + INTERVAL '1 hour', 12.00, 0),
+('Moon Sequence at the Rose Garden', 'Evening yoga under the moonlight', 'A peaceful evening practice designed to help you unwind and connect with your inner self. This gentle flow is perfect for ending your day mindfully.', 'Alex', NOW() + INTERVAL '2 days', NOW() + INTERVAL '2 days' + INTERVAL '1 hour', 10.00, 0),
+('Sunrise Flow', 'Energizing morning practice to start your day', 'Begin your day with this invigorating morning flow that combines dynamic movement with mindful breathing. Perfect for building energy and focus for the day ahead.', 'Jordan', NOW() + INTERVAL '3 days', NOW() + INTERVAL '3 days' + INTERVAL '1.5 hours', 15.00, 0),
+('Gentle Hatha', 'Traditional yoga practice for all levels', 'A traditional Hatha yoga class suitable for all levels. Focus on proper alignment, breathing, and mindful movement in a supportive environment.', 'Taylor', NOW() + INTERVAL '4 days', NOW() + INTERVAL '4 days' + INTERVAL '1 hour', 8.00, 0),
+('Vinyasa Flow', 'Dynamic movement synchronized with breath', 'A dynamic and flowing practice that links movement with breath. This intermediate-level class builds strength, flexibility, and mindfulness.', 'Casey', NOW() + INTERVAL '5 days', NOW() + INTERVAL '5 days' + INTERVAL '1.5 hours', 12.00, 0),
+('Restorative Evening', 'Deep relaxation and stress relief', 'A deeply relaxing class using props to support the body in passive poses. Perfect for stress relief and recovery after a busy day.', 'Morgan', NOW() + INTERVAL '6 days', NOW() + INTERVAL '6 days' + INTERVAL '1 hour', 10.00, 0),
+('Weekly Meditation', 'Mindfulness and meditation practice', 'A weekly meditation class combining breathing techniques, mindfulness practices, and guided meditation for stress reduction and mental clarity.', 'Riley', NOW() + INTERVAL '7 days', NOW() + INTERVAL '7 days' + INTERVAL '45 minutes', 8.00, 4);
 
 -- Grant necessary permissions
 GRANT USAGE ON SCHEMA public TO anon, authenticated;

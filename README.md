@@ -1,6 +1,6 @@
 # 🧘‍♀️ Yoga Class Scheduling System
 
-A comprehensive React-based yoga class scheduling system with authentication, payment processing, and admin functionality. Built with modern web technologies and a focus on user experience.
+A comprehensive React-based yoga class scheduling system with authentication, payment processing, and admin functionality. Built with modern web technologies and a focus on user experience.  Great solution for small studios or individual.  A inexpensive alternative to GymCatch, Aquity and Taramala.
 
 ## ✨ Features
 
@@ -222,6 +222,21 @@ npm run dev
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Disclaimer
+
+This software is provided "as is" and without any warranty of any kind.
+The author(s) make no representations or warranties, express or implied,
+regarding the accuracy, reliability, or suitability of this software for
+any particular purpose. Use of this software is at your own risk.
+
+In no event shall the author(s) be held liable for any claim, damages, 
+or other liability (whether in an action of contract, tort, or otherwise) 
+arising from, out of, or in connection with the software or its use.
+
+By using this software, you acknowledge and agree that you are solely 
+responsible for any outcomes, issues, or consequences resulting from 
+its use.
 
 ## 🙏 Acknowledgments
 

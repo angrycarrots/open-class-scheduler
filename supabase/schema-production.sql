@@ -21,7 +21,7 @@ CREATE TABLE yoga_classes (
   name TEXT NOT NULL,
   brief_description TEXT NOT NULL,
   full_description TEXT NOT NULL,
-  instructor TEXT NOT NULL DEFAULT 'Michael',
+  instructor TEXT NOT NULL DEFAULT 'Sarah',
   start_time TIMESTAMP WITH TIME ZONE NOT NULL,
   end_time TIMESTAMP WITH TIME ZONE NOT NULL,
   price DECIMAL(10,2) NOT NULL DEFAULT 10.00,
