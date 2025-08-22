@@ -28,25 +28,33 @@ This guide will help you deploy your yoga class scheduling system from local dev
 
 ## 🗄️ Step 2: Initialize Remote Database
 
+> The project has two SQL files: the main schema and an additive Waivers migration.
+> - `supabase/schema.sql` (core tables, policies, triggers, sample data for dev)
+> - `supabase/waivers.sql` (adds `waivers` and `user_waivers`, policies, seed active waiver)
+
 ### Option A: Using Supabase CLI (Recommended)
 
 ```bash
 # Link to your remote project
 supabase link --project-ref your-project-ref
 
-# Push the schema to remote
-supabase db push
+# Push existing migrations or run SQL files manually (recommended for these flat SQL files)
+# Apply core schema
+supabase db execute --file supabase/schema.sql
 
-# Verify the push was successful
-supabase db diff
+# Apply waivers additive migration
+supabase db execute --file supabase/waivers.sql
+
+# Verify
+supabase db dump --data-only --schema public | head -n 50
 ```
 
 ### Option B: Manual SQL Execution
 
 1. Go to your Supabase Dashboard → **SQL Editor**
-2. Copy the entire contents of `supabase/schema.sql`
-3. Paste and execute the SQL
-4. Verify tables are created in **Table Editor**
+2. Paste and execute `supabase/schema.sql`
+3. Paste and execute `supabase/waivers.sql`
+4. Verify tables exist in **Table Editor** (`profiles`, `yoga_classes`, `class_registrations`, `waivers`, `user_waivers`)
 
 ## 🔐 Step 3: Set Up Authentication
 
@@ -73,13 +81,13 @@ Create `.env.production`:
 VITE_SUPABASE_URL="https://your-project-ref.supabase.co"
 VITE_SUPABASE_ANON_KEY="your-remote-anon-key"
 
-# Square API Configuration (for Phase 5)
-VITE_SQUARE_APPLICATION_ID="your-square-app-id"
-VITE_SQUARE_LOCATION_ID="your-square-location-id"
-
-# SMS Service Configuration (for Phase 5)
-VITE_SMS_API_KEY="your-sms-api-key"
-VITE_SMS_PHONE_NUMBER="your-sms-phone-number"
+# Email Configuration (Production)
+VITE_EMAIL_FROM="Yoga Classes <no-reply@yoursite>"
+VITE_EMAIL_PROVIDER="smtp"           # or provider id
+VITE_EMAIL_SMTP_HOST=smtp.example.com
+VITE_EMAIL_SMTP_PORT=587
+VITE_EMAIL_SMTP_USER=your-smtp-user
+VITE_EMAIL_SMTP_PASS=your-smtp-pass
 ```
 
 ### 4.2 Update Local Development
@@ -89,6 +97,14 @@ Keep `.env.local` for local development:
 # Supabase Configuration (Local Development)
 VITE_SUPABASE_URL="http://127.0.0.1:54321"
 VITE_SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0"
+
+# Email Configuration (Local with Inbucket/Mailpit from Supabase)
+VITE_EMAIL_FROM="Yoga Classes <no-reply@local>"
+VITE_EMAIL_PROVIDER="smtp"
+VITE_EMAIL_SMTP_HOST=127.0.0.1
+VITE_EMAIL_SMTP_PORT=54324           # Supabase Mailpit (Inbucket) HTTP ui; SMTP often 1025 if using local
+VITE_EMAIL_SMTP_USER=
+VITE_EMAIL_SMTP_PASS=
 ```
 
 ## 🚀 Step 5: Deploy Your App
@@ -154,14 +170,17 @@ VITE_SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmF
 3. **Test admin features**:
    - Access admin dashboard
    - Create/edit/delete classes
+   - Manage waivers (create, set active)
 4. **Test user features**:
-   - Browse classes
-   - Register for classes
+   - Browse classes (cancelled classes visibly marked)
+   - Register for classes (confirmation email)
+   - Signup flow requires agreeing to waiver (email sent with snapshot)
 
 ### 6.2 Check Database
 1. Go to Supabase Dashboard → **Table Editor**
 2. Verify tables are populated
-3. Check RLS policies are working
+3. Confirm new tables exist: `waivers`, `user_waivers`
+4. Check RLS policies are working
 
 ## 🔄 Step 7: Switch Between Environments
 
@@ -169,7 +188,7 @@ VITE_SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmF
 ```bash
 # Use local Supabase
 npm run dev
-# Uses .env.local with localhost:54321
+# Uses .env.local with 127.0.0.1:54321
 ```
 
 ### Production
@@ -226,16 +245,18 @@ After successful deployment:
 1. **Set up custom domain** (optional)
 2. **Configure SSL certificates** (automatic with Vercel/Netlify)
 3. **Set up monitoring and analytics**
-4. **Implement Phase 5: Payment Integration**
-5. **Add SMS notifications**
+4. **Waivers & Email phase**: finalize templates and provider
+5. **(Postponed) Payments**: integrate Square
 6. **Set up automated backups**
 
 ## 🎯 Production Checklist
 
-- [ ] Database schema deployed
-- [ ] Environment variables configured
+- [ ] Database schema deployed (schema.sql + waivers.sql)
+- [ ] Environment variables configured (Supabase + Email)
 - [ ] Authentication working
 - [ ] Admin access verified
+- [ ] Waiver agreement required and persisted
+- [ ] Registration & cancellation emails delivered
 - [ ] All features tested
 - [ ] Performance optimized
 - [ ] Error monitoring set up
