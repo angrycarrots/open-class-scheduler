@@ -57,17 +57,25 @@ export const useCreateClass = () => {
       const startTime = new Date(classData.start_time);
       const endTime = new Date(startTime.getTime() + 60 * 60 * 1000);
 
-      const { data, error } = await supabase
-        .from(TABLES.CLASSES)
-        .insert({
+      const response = await fetch('http://127.0.0.1:54321/rest/v1/yoga_classes', {
+        method: 'POST',
+        headers: {
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
           ...classData,
           end_time: endTime.toISOString(),
         })
-        .select()
-        .single();
+      });
 
-      if (error) throw error;
-      return data;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data[0] as YogaClass;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['classes'] });
@@ -81,18 +89,25 @@ export const useUpdateClass = () => {
 
   return useMutation({
     mutationFn: async ({ id, ...classData }: UpdateClassData): Promise<YogaClass> => {
-      const { data, error } = await supabase
-        .from(TABLES.CLASSES)
-        .update({
+      const response = await fetch(`http://127.0.0.1:54321/rest/v1/yoga_classes?id=eq.${id}`, {
+        method: 'PATCH',
+        headers: {
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
           ...classData,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', id)
-        .select()
-        .single();
+      });
 
-      if (error) throw error;
-      return data;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data[0] as YogaClass;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['classes'] });
@@ -107,12 +122,18 @@ export const useDeleteClass = () => {
 
   return useMutation({
     mutationFn: async (classId: string): Promise<void> => {
-      const { error } = await supabase
-        .from(TABLES.CLASSES)
-        .delete()
-        .eq('id', classId);
+      const response = await fetch(`http://127.0.0.1:54321/rest/v1/yoga_classes?id=eq.${classId}`, {
+        method: 'DELETE',
+        headers: {
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+          'Content-Type': 'application/json'
+        }
+      });
 
-      if (error) throw error;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['classes'] });
@@ -126,18 +147,25 @@ export const useCancelClass = () => {
 
   return useMutation({
     mutationFn: async (classId: string): Promise<YogaClass> => {
-      const { data, error } = await supabase
-        .from(TABLES.CLASSES)
-        .update({
+      const response = await fetch(`http://127.0.0.1:54321/rest/v1/yoga_classes?id=eq.${classId}`, {
+        method: 'PATCH',
+        headers: {
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
           is_cancelled: true,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', classId)
-        .select()
-        .single();
+      });
 
-      if (error) throw error;
-      return data;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data[0] as YogaClass;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['classes'] });
