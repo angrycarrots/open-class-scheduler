@@ -82,12 +82,9 @@ VITE_SUPABASE_URL="https://your-project-ref.supabase.co"
 VITE_SUPABASE_ANON_KEY="your-remote-anon-key"
 
 # Email Configuration (Production)
-VITE_EMAIL_FROM="Yoga Classes <no-reply@yoursite>"
-VITE_EMAIL_PROVIDER="smtp"           # or provider id
-VITE_EMAIL_SMTP_HOST=smtp.example.com
-VITE_EMAIL_SMTP_PORT=587
-VITE_EMAIL_SMTP_USER=your-smtp-user
-VITE_EMAIL_SMTP_PASS=your-smtp-pass
+VITE_EMAIL_PROVIDER="sendgrid"       # or resend, aws-ses, etc.
+VITE_EMAIL_API_KEY="your-email-provider-api-key"
+VITE_EMAIL_FROM="noreply@yogaclass.com"
 ```
 
 ### 4.2 Update Local Development
@@ -98,13 +95,9 @@ Keep `.env.local` for local development:
 VITE_SUPABASE_URL="http://127.0.0.1:54321"
 VITE_SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0"
 
-# Email Configuration (Local with Inbucket/Mailpit from Supabase)
-VITE_EMAIL_FROM="Yoga Classes <no-reply@local>"
-VITE_EMAIL_PROVIDER="smtp"
-VITE_EMAIL_SMTP_HOST=127.0.0.1
-VITE_EMAIL_SMTP_PORT=54324           # Supabase Mailpit (Inbucket) HTTP ui; SMTP often 1025 if using local
-VITE_EMAIL_SMTP_USER=
-VITE_EMAIL_SMTP_PASS=
+# Email Configuration (Local with Inbucket)
+VITE_EMAIL_PROVIDER="inbucket"
+VITE_INBUCKET_URL="http://127.0.0.1:9000"
 ```
 
 ## 🚀 Step 5: Deploy Your App

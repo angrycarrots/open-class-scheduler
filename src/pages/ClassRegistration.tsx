@@ -7,8 +7,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CalendarIcon, ClockIcon, UserIcon, CurrencyDollarIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
-// TODO: Import email service when implemented
-// import { sendRegistrationEmail } from '../utils/email';
+import { sendRegistrationEmail } from '../utils/emailFunctions';
 
 const registrationSchema = z.object({
   payment_amount: z.number()
@@ -88,18 +87,21 @@ export const ClassRegistration: React.FC = () => {
         // squarePaymentId: 'simulated-payment-id', // TODO: Add real Square payment ID
       });
 
-      // TODO: Send email confirmation when email service is implemented
-      // try {
-      //   await sendRegistrationEmail(
-      //     user.email,
-      //     yogaClass.name,
-      //     formatDate(yogaClass.start_time),
-      //     formatTime(yogaClass.start_time)
-      //   );
-      // } catch (emailError) {
-      //   console.error('Failed to send email:', emailError);
-      //   // Don't fail registration if email fails
-      // }
+      // Send email confirmation
+      try {
+        await sendRegistrationEmail(
+          user.email,
+          user.full_name || 'Valued Customer',
+          yogaClass.name,
+          formatDate(yogaClass.start_time),
+          formatTime(yogaClass.start_time),
+          yogaClass.instructor,
+          data.payment_amount
+        );
+      } catch (emailError) {
+        console.error('Failed to send email:', emailError);
+        // Don't fail registration if email fails
+      }
 
       setSuccess('Registration successful! You will receive a confirmation email shortly.');
       

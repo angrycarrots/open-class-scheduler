@@ -2,8 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import { supabase } from '../utils/supabase';
 import type { User, AuthContextType } from '../types';
-// TODO: Import email service when implemented
-// import { sendWaiverEmail } from '../utils/email';
+import { sendWaiverEmail } from '../utils/emailFunctions';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -109,13 +108,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     });
     if (error) throw error;
 
-    // TODO: Send waiver email to new user when email service is implemented
-    // try {
-    //   await sendWaiverEmail(email);
-    // } catch (emailError) {
-    //   console.error('Failed to send waiver email:', emailError);
-    //   // Don't throw error here as user registration was successful
-    // }
+    // Send waiver email to new user
+    try {
+      await sendWaiverEmail(email, email, 'Welcome to our yoga community!');
+    } catch (emailError) {
+      console.error('Failed to send waiver email:', emailError);
+      // Don't throw error here as user registration was successful
+    }
 
     return data.user;
   };

@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AttendeeModal } from '../components/AttendeeModal';
 import { createWeeklyClasses, getDayOfWeekName } from '../utils/weeklyRepeat';
+import { sendCancellationToAllRegistrants } from '../utils/emailFunctions';
 import { 
   PlusIcon, 
   PencilIcon, 
@@ -123,12 +124,49 @@ export const AdminDashboard: React.FC = () => {
   };
 
   const handleCancel = async (classId: string) => {
-    if (window.confirm('Are you sure you want to cancel this class?')) {
+    if (window.confirm('Are you sure you want to cancel this class? All registered users will be notified.')) {
       try {
+        // Get class details before cancelling
+        const yogaClass = classes.find(c => c.id === classId);
+        if (!yogaClass) {
+          setFormError('Class not found');
+          return;
+        }
+
+        // Get registrations for this class
+        const response = await fetch(`http://127.0.0.1:54321/rest/v1/class_registrations?class_id=eq.${classId}&select=*,profiles(full_name,email)`, {
+          headers: {
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const registrations = await response.json();
+
+        // Cancel the class
         await cancelClass.mutateAsync(classId);
-        setFormSuccess('Class cancelled successfully!');
+        
+        // Send cancellation emails to all registrants
+        if (registrations.length > 0) {
+          try {
+            await sendCancellationToAllRegistrants(
+              registrations,
+              yogaClass.name,
+              formatDate(yogaClass.start_time),
+              formatTime(yogaClass.start_time),
+              yogaClass.instructor
+            );
+          } catch (emailError) {
+            console.error('Failed to send cancellation emails:', emailError);
+            // Don't fail the cancellation if emails fail
+          }
+        }
+
+        setFormSuccess('Class cancelled successfully! All registrants have been notified.');
         setTimeout(() => setFormSuccess(null), 3000);
-      } catch {
+      } catch (error) {
+        console.error('Cancel class error:', error);
         setFormError('Failed to cancel class');
       }
     }
