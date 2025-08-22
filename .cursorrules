@@ -1,0 +1,46 @@
+# Yoga Class Scheduler - Cursor Rules
+
+# Supabase & Environment
+- Always use http://127.0.0.1:54321 for local Supabase (never localhost).
+- Normalize any hardcoded 'localhost' → '127.0.0.1' in runtime URLs.
+- Do not auto-edit .env files from tools; instruct user to update .env.local (it overrides .env).
+- Never commit secrets or .env* files. Assume .env.local is the source of truth in dev.
+- After changing env vars, fully restart Vite dev server.
+
+# Data Fetching & Auth
+- Prefer Supabase client for auth flows; if profile/data reads hang in local, use direct fetch to http://127.0.0.1:54321/rest/v1.
+- For direct fetches, return typed results (e.g., cast to YogaClass[]) and remove debug logs before committing.
+- Keep auth session handling via supabase.auth; profile lookups can fall back to direct fetch.
+
+# Tailwind & CSS
+- Use Tailwind v3 with postcss config: tailwindcss + autoprefixer.
+- Avoid global base CSS that overrides Tailwind (body, a, button, h1, etc.).
+- Use arbitrary color values when needed (e.g., bg-[#6B4E44]); keep line-clamp utility available.
+
+# React/TypeScript Hygiene
+- Remove or rename unused variables/params immediately to satisfy ESLint.
+- Explicitly type API results; avoid 'any'.
+- Keep components free of temporary debug logging before commit.
+
+# Admin & Classes
+- Duplicate class: populate the create form with selected class fields; clear start_time; do NOT insert immediately.
+- On create, compute end_time and ensure NOT NULL fields (start_time, end_time, name, descriptions, instructor, price) are present.
+
+# Sample Data & Filters
+- Sample classes should use future dates (NOW() + INTERVAL 'X days') to avoid empty listings.
+- Client filters/sorts must handle empty arrays safely.
+
+# Tooling & Ops
+- When UI appears unstyled: verify Tailwind version/config, and check for conflicting CSS.
+- When data seems stuck: 1) supabase status; 2) curl http://127.0.0.1:54321/rest/v1/yoga_classes?select=*; 3) inspect .env.local.
+- Do not commit .supabase/ or Docker artifacts.
+- Keep commits small; fix lint before push.
+
+# Files to Avoid Committing
+- .env, .env.local, any .env* files
+- .supabase/
+- Large debug screenshots or generated assets
+
+# Commit Discipline
+- Remove console.debug logs prior to commit (unless explicitly required).
+- Run `npm run lint` and ensure clean before pushing.
