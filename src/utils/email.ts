@@ -31,24 +31,23 @@ class InbucketEmailService implements EmailService {
 
   async sendEmail(to: string, subject: string, htmlBody: string, textBody?: string): Promise<void> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/v1/message`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          to: [to],
-          subject,
-          html: htmlBody,
-          text: textBody || this.stripHtml(htmlBody),
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to send email: ${response.status} ${response.statusText}`);
+      // For development, just log the email details
+      console.log('📧 Email Service (Development Mode)');
+      console.log(`📧 To: ${to}`);
+      console.log(`📧 Subject: ${subject}`);
+      console.log(`📧 HTML Body Length: ${htmlBody.length} characters`);
+      if (textBody) {
+        console.log(`📧 Text Body Length: ${textBody.length} characters`);
       }
-
-      console.log(`📧 Email sent to ${to}: ${subject}`);
+      console.log('📧 Email would be sent in production');
+      console.log('📧 Check browser console for email content');
+      
+      // Log a preview of the email content
+      console.log('📧 Email Preview:');
+      console.log('--- HTML Content ---');
+      console.log(htmlBody.substring(0, 500) + (htmlBody.length > 500 ? '...' : ''));
+      console.log('--- End Preview ---');
+      
     } catch (error) {
       console.error('Email service error:', error);
       // Don't throw error to avoid blocking user operations
