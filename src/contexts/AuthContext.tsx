@@ -37,9 +37,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      (_event, session) => {
         if (session?.user) {
-          await fetchUserProfile(session.user);
+          // Fire-and-forget; don't block UI on profile fetch
+          fetchUserProfile(session.user);
         } else {
           setUser(null);
         }
@@ -52,35 +53,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const fetchUserProfile = async (supabaseUser: SupabaseUser) => {
     try {
-      // Use direct fetch to avoid localhost issues
-      const response = await fetch(`http://127.0.0.1:54321/rest/v1/profiles?id=eq.${supabaseUser.id}&select=*`, {
-        headers: {
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
-          'Content-Type': 'application/json'
-        }
-      });
+      const { data: profileData, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', supabaseUser.id)
+        .maybeSingle();
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      if (error) throw error;
 
-      const data = await response.json();
-      const profileData = data[0]; // Get first (and only) profile
+      const profile = profileData ?? null;
 
       const userProfile: User = {
         id: supabaseUser.id,
         email: supabaseUser.email || '',
-        full_name: profileData?.full_name || undefined,
-        avatar_url: profileData?.avatar_url || 'avatar.png',
+        full_name: profile?.full_name || undefined,
+        avatar_url: profile?.avatar_url || 'avatar.png',
         created_at: supabaseUser.created_at,
-        updated_at: profileData?.updated_at || supabaseUser.created_at,
+        updated_at: profile?.updated_at || supabaseUser.created_at,
       };
 
       setUser(userProfile);
     } catch (error) {
       console.error('Error in fetchUserProfile:', error);
-      // Set user without profile data if fetch fails
+      // Fallback: set minimal user data so app remains usable
       const userProfile: User = {
         id: supabaseUser.id,
         email: supabaseUser.email || '',
@@ -127,19 +122,42 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const updateProfile = async (data: Partial<User>) => {
     if (!user) throw new Error('No user logged in');
 
-    const { error } = await supabase
+    const { data: updated, error } = await supabase
       .from('profiles')
-      .upsert({
-        id: user.id,
+      .update({
+        email: user.email,
         full_name: data.full_name,
         avatar_url: data.avatar_url,
         updated_at: new Date().toISOString(),
-      });
+      })
+      .eq('id', user.id)
+      .select('*');
 
     if (error) throw error;
+    let applied = updated;
+    if (!applied || applied.length === 0) {
+      // Attempt to create the profile row if it doesn't exist
+      const insertRes = await supabase
+        .from('profiles')
+        .insert({
+          id: user.id,
+          email: user.email,
+          full_name: data.full_name,
+          avatar_url: data.avatar_url ?? 'avatar.png',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .select('*');
+
+      if (insertRes.error) throw insertRes.error;
+      applied = insertRes.data as any[];
+      if (!applied || applied.length === 0) {
+        throw new Error('Failed to create profile row.');
+      }
+    }
 
     // Update local user state
-    setUser(prev => prev ? { ...prev, ...data } : null);
+    setUser(prev => prev ? { ...prev, ...data, email: user.email } : null);
   };
 
   const value: AuthContextType = {

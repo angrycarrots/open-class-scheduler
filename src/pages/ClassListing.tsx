@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useClasses } from '../hooks/useClasses';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { useUserRegistrations } from '../hooks/useRegistrations';
+import { useCancelRegistration } from '../hooks/useRegistrations';
 
 // Define FilterOptions type locally since we removed the import
 type FilterOptions = {
@@ -24,6 +25,9 @@ export const ClassListing: React.FC = () => {
   // Fetch current user's registrations and build a quick lookup set
   const { data: registrations = [] } = useUserRegistrations(user?.id);
   const bookedClassIds = useMemo(() => new Set(registrations.map(r => r.class_id)), [registrations]);
+  const registrationIdByClassId = useMemo(() => new Map(registrations.map(r => [r.class_id, r.id])), [registrations]);
+
+  const { mutate: cancelRegistration } = useCancelRegistration();
 
 
 
@@ -48,6 +52,18 @@ export const ClassListing: React.FC = () => {
 
   const handleAdmin = () => {
     navigate('/admin');
+  };
+
+  const handleUnregister = (classId: string) => {
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+    const registrationId = registrationIdByClassId.get(classId);
+    if (!registrationId) {
+      return;
+    }
+    cancelRegistration(registrationId);
   };
 
   const handleSignOut = async () => {
@@ -274,6 +290,7 @@ export const ClassListing: React.FC = () => {
                 onRegister={handleRegister}
                 isAuthenticated={!!user}
                 isBooked={bookedClassIds.has(yogaClass.id)}
+                onUnregister={handleUnregister}
               />
             ))}
           </div>

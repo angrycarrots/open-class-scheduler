@@ -105,6 +105,10 @@ CREATE POLICY "Users can view their own profile" ON profiles
 CREATE POLICY "Users can update their own profile" ON profiles
   FOR UPDATE USING (auth.uid() = id);
 
+-- Allow users to create their own profile (for users created before trigger, or if profile is missing)
+CREATE POLICY "Users can create their own profile" ON profiles
+  FOR INSERT WITH CHECK (auth.uid() = id);
+
 -- Yoga classes policies (public read, admin write)
 CREATE POLICY "Anyone can view non-cancelled classes" ON yoga_classes
   FOR SELECT USING (is_cancelled = FALSE);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useForm } from 'react-hook-form';
@@ -27,6 +27,14 @@ export const Profile: React.FC = () => {
       avatar_url: user?.avatar_url || 'avatar.png',
     },
   });
+
+  // Keep form in sync when user data loads/changes (e.g., after re-login)
+  useEffect(() => {
+    form.reset({
+      full_name: user?.full_name || '',
+      avatar_url: user?.avatar_url || 'avatar.png',
+    });
+  }, [user?.full_name, user?.avatar_url]);
 
   const onSubmit = async (data: ProfileFormData) => {
     try {

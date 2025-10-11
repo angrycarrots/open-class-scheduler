@@ -39,20 +39,45 @@ export const useClassRegistrations = (classId: string) => {
     queryFn: async (): Promise<ClassRegistration[]> => {
       const { data, error } = await supabase
         .from(TABLES.REGISTRATIONS)
-        .select(`
-          *,
-          profiles (
-            id,
-            full_name,
-            email,
-            phone
-          )
-        `)
+        .select('*')
         .eq('class_id', classId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data || [];
+      const registrations = data || [];
+
+      // Attempt to enrich with profile data via REST if we have user IDs
+      if (registrations.length > 0) {
+        try {
+          const userIds = Array.from(new Set(registrations.map(r => r.user_id)));
+          const inList = userIds.join(',');
+          const resp = await fetch(`http://127.0.0.1:54321/rest/v1/profiles?id=in.(${inList})&select=id,full_name,email`, {
+            headers: {
+              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (resp.ok) {
+            const profiles: Array<{ id: string; full_name?: string; email?: string }> = await resp.json();
+            const byId = new Map(profiles.map(p => [p.id, p] as const));
+            return registrations.map(r => ({
+              ...r,
+              profiles: byId.get(r.user_id) ? {
+                id: r.user_id,
+                full_name: byId.get(r.user_id)?.full_name,
+                email: byId.get(r.user_id)?.email,
+              } : undefined,
+            }));
+          }
+        } catch (e) {
+          // Swallow enrichment errors and fall back to bare registrations
+          console.error('Failed to enrich registrations with profiles:', e);
+        }
+      }
+
+      return registrations;
     },
     enabled: !!classId,
   });
