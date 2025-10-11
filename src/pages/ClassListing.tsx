@@ -4,6 +4,7 @@ import { ClassCard } from '../components/ClassCard';
 import { useAuth } from '../contexts/AuthContext';
 import { useClasses } from '../hooks/useClasses';
 import { PlusIcon } from '@heroicons/react/24/outline';
+import { useUserRegistrations } from '../hooks/useRegistrations';
 
 // Define FilterOptions type locally since we removed the import
 type FilterOptions = {
@@ -19,6 +20,10 @@ export const ClassListing: React.FC = () => {
   const navigate = useNavigate();
   const { data: classes = [], isLoading: loading, error } = useClasses();
   const [filters, setFilters] = useState<FilterOptions>({});
+
+  // Fetch current user's registrations and build a quick lookup set
+  const { data: registrations = [] } = useUserRegistrations(user?.id);
+  const bookedClassIds = useMemo(() => new Set(registrations.map(r => r.class_id)), [registrations]);
 
 
 
@@ -268,6 +273,7 @@ export const ClassListing: React.FC = () => {
                 yogaClass={yogaClass}
                 onRegister={handleRegister}
                 isAuthenticated={!!user}
+                isBooked={bookedClassIds.has(yogaClass.id)}
               />
             ))}
           </div>
