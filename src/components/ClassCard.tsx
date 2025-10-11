@@ -6,12 +6,14 @@ interface ClassCardProps {
   onRegister: (classId: string) => void;
   isAuthenticated: boolean;
   isBooked?: boolean;
+  onUnregister?: (classId: string) => void;
 }
 
 export const ClassCard: React.FC<ClassCardProps> = ({
   yogaClass,
   onRegister,
   isBooked = false,
+  onUnregister,
 }) => {
   const [showDetails, setShowDetails] = useState(false);
 
@@ -106,16 +108,21 @@ export const ClassCard: React.FC<ClassCardProps> = ({
           {/* Register Button */}
           <div className="ml-6 flex-shrink-0">
             <button
-              onClick={() => onRegister(yogaClass.id)}
-              disabled={yogaClass.is_cancelled || isBooked}
+              onClick={() => (isBooked ? onUnregister && onUnregister(yogaClass.id) : onRegister(yogaClass.id))}
+              disabled={yogaClass.is_cancelled}
               className={`px-6 py-2 rounded font-medium transition-colors ${
-                yogaClass.is_cancelled || isBooked
+                yogaClass.is_cancelled
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-[#A8A38F] text-white hover:bg-[#9A9585] focus:outline-none focus:ring-2 focus:ring-[#A8A38F] focus:ring-offset-2'
+                  : isBooked
+                    ? 'bg-gray-300 text-gray-700 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2'
+                    : 'bg-[#A8A38F] text-white hover:bg-[#9A9585] focus:outline-none focus:ring-2 focus:ring-[#A8A38F] focus:ring-offset-2'
               }`}
             >
-              {yogaClass.is_cancelled ? 'CANCELLED' : isBooked ? 'BOOKED' : 'REGISTER'}
+              {yogaClass.is_cancelled ? 'CANCELLED' : isBooked ? 'UNREGISTER' : 'REGISTER'}
             </button>
+            {isBooked && !yogaClass.is_cancelled && (
+              <div className="mt-2 text-xs text-gray-600 text-center">You are registered.</div>
+            )}
           </div>
         </div>
       </div>
