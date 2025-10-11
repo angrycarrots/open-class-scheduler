@@ -74,28 +74,22 @@ export const useCreateRegistration = () => {
       paymentAmount: number;
       squarePaymentId?: string;
     }): Promise<ClassRegistration> => {
-      const response = await fetch('http://127.0.0.1:54321/rest/v1/class_registrations', {
-        method: 'POST',
-        headers: {
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
+      const { data, error } = await supabase
+        .from(TABLES.REGISTRATIONS)
+        .insert({
           class_id: classId,
           user_id: userId,
           payment_amount: paymentAmount,
           payment_status: 'completed',
           square_payment_id: squarePaymentId,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
         })
-      });
+        .select()
+        .single();
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      return data[0] as ClassRegistration;
+      if (error) throw error;
+      return data as ClassRegistration;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['registrations', variables.userId] });
