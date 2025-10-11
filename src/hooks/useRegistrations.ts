@@ -71,9 +71,8 @@ export const useClassRegistrations = (classId: string) => {
               } : undefined,
             }));
           }
-        } catch (e) {
+        } catch (_e) {
           // Swallow enrichment errors and fall back to bare registrations
-          console.error('Failed to enrich registrations with profiles:', e);
         }
       }
 

@@ -31,22 +31,7 @@ class InbucketEmailService implements EmailService {
 
   async sendEmail(to: string, subject: string, htmlBody: string, textBody?: string): Promise<void> {
     try {
-      // For development, just log the email details
-      console.log('📧 Email Service (Development Mode)');
-      console.log(`📧 To: ${to}`);
-      console.log(`📧 Subject: ${subject}`);
-      console.log(`📧 HTML Body Length: ${htmlBody.length} characters`);
-      if (textBody) {
-        console.log(`📧 Text Body Length: ${textBody.length} characters`);
-      }
-      console.log('📧 Email would be sent in production');
-      console.log('📧 Check browser console for email content');
-      
-      // Log a preview of the email content
-      console.log('📧 Email Preview:');
-      console.log('--- HTML Content ---');
-      console.log(htmlBody.substring(0, 500) + (htmlBody.length > 500 ? '...' : ''));
-      console.log('--- End Preview ---');
+      // Development noop (no console noise)
       
     } catch (error) {
       console.error('Email service error:', error);
@@ -71,11 +56,7 @@ class InbucketEmailService implements EmailService {
 class ProductionEmailService implements EmailService {
   async sendEmail(to: string, subject: string, htmlBody: string, textBody?: string): Promise<void> {
     // TODO: Implement production email provider (SendGrid, Resend, etc.)
-    console.log(`📧 [PRODUCTION] Email would be sent to ${to}: ${subject}`);
-    console.log('HTML Body:', htmlBody);
-    if (textBody) {
-      console.log('Text Body:', textBody);
-    }
+    // No-op in placeholder
   }
 }
 

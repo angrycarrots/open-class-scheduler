@@ -176,16 +176,11 @@ export const AdminDashboard: React.FC = () => {
         }
 
         // Cancel the class
-        console.log('About to cancel class:', classId);
         await cancelClass.mutateAsync(classId);
-        console.log('Class cancelled successfully');
         
         // Send cancellation emails to all registrants
         if (registrations.length > 0) {
           try {
-            // For now, just log that we would send emails
-            console.log(`Would send cancellation emails to ${registrations.length} registrants`);
-            console.log('Registrations:', registrations);
             // TODO: Implement proper email sending when we have user profile data
           } catch (emailError) {
             console.error('Failed to send cancellation emails:', emailError);
