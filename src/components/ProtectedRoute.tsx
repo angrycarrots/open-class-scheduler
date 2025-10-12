@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { ADMIN_EMAIL } from '../admin_user';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -34,7 +35,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   }
 
   // If admin access is required but user is not admin
-  if (adminOnly && user?.email !== 'admin@example.com') {
+  if (adminOnly && user?.email !== ADMIN_EMAIL) {
     return <Navigate to="/" replace />;
   }
 

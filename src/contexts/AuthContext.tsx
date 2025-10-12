@@ -66,7 +66,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const userProfile: User = {
         id: supabaseUser.id,
         email: supabaseUser.email || '',
-        full_name: profile?.full_name || undefined,
+        username: profile?.full_name || undefined,
         avatar_url: profile?.avatar_url || 'avatar.png',
         created_at: supabaseUser.created_at,
         updated_at: profile?.updated_at || supabaseUser.created_at,
@@ -79,7 +79,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const userProfile: User = {
         id: supabaseUser.id,
         email: supabaseUser.email || '',
-        full_name: undefined,
+        username: undefined,
         avatar_url: 'avatar.png',
         created_at: supabaseUser.created_at,
         updated_at: supabaseUser.created_at,
@@ -96,16 +96,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (error) throw error;
   };
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, username: string) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          full_name: username,
+        },
+      },
     });
     if (error) throw error;
 
     // Send waiver email to new user
     try {
-      await sendWaiverEmail(email, email, 'Thank you for agreeing to our waiver terms. Please review the complete waiver terms below.');
+      await sendWaiverEmail(email, username, 'Thank you for agreeing to our waiver terms. Please review the complete waiver terms below.');
     } catch (emailError) {
       console.error('Failed to send waiver email:', emailError);
       // Don't throw error here as user registration was successful
@@ -126,7 +131,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       .from('profiles')
       .update({
         email: user.email,
-        full_name: data.full_name,
+        full_name: data.username,
         avatar_url: data.avatar_url,
         updated_at: new Date().toISOString(),
       })
@@ -142,7 +147,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         .insert({
           id: user.id,
           email: user.email,
-          full_name: data.full_name,
+          full_name: data.username,
           avatar_url: data.avatar_url ?? 'avatar.png',
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
@@ -160,6 +165,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUser(prev => prev ? { ...prev, ...data, email: user.email } : null);
   };
 
+  const requestPasswordReset = async (email: string) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth?type=recovery`,
+    });
+    if (error) throw error;
+  };
+
   const value: AuthContextType = {
     user,
     loading,
@@ -167,6 +179,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     signUp,
     signOut,
     updateProfile,
+    requestPasswordReset,
   };
 
   return (

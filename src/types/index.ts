@@ -1,7 +1,7 @@
 export interface User {
   id: string;
   email: string;
-  full_name?: string;
+  username?: string;
   avatar_url?: string;
   created_at: string;
   updated_at: string;
@@ -51,7 +51,7 @@ export interface ClassRegistration {
   updated_at: string;
   profiles?: {
     id: string;
-    full_name?: string;
+    username?: string;
     email?: string;
   };
 }
@@ -74,7 +74,8 @@ export interface AuthContextType {
   user: User | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<any>;
+  signUp: (email: string, password: string, username: string) => Promise<any>;
   signOut: () => Promise<void>;
   updateProfile: (data: Partial<User>) => Promise<void>;
+  requestPasswordReset: (email: string) => Promise<void>;
 }

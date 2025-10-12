@@ -71,7 +71,7 @@ export const AttendeeModal: React.FC<AttendeeModalProps> = ({ classId, onClose }
                           </div>
                           <div className="ml-3">
                             <div className="text-sm font-medium text-gray-900">
-                              {registration.profiles?.full_name || 'Unknown User'}
+                              {registration.profiles?.username || 'Unknown User'}
                             </div>
                             <div className="text-sm text-gray-500">
                               ID: {registration.user_id.slice(0, 8)}...

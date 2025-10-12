@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useClasses } from '../hooks/useClasses';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { useUserRegistrations } from '../hooks/useRegistrations';
+import { ADMIN_EMAIL } from '../admin_user';
 import { useCancelRegistration } from '../hooks/useRegistrations';
 
 // Define FilterOptions type locally since we removed the import
@@ -185,7 +186,7 @@ export const ClassListing: React.FC = () => {
                   >
                     Profile
                   </button>
-                  {user.email === 'admin@example.com' && (
+                  {user.email === ADMIN_EMAIL && (
                     <button
                       onClick={handleAdmin}
                       className="bg-[#A8A38F] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#9A9585]"

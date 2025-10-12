@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase, TABLES } from '../utils/supabase';
+import { supabase, TABLES, REST_URL, restHeaders } from '../utils/supabase';
 import type { YogaClass, CreateClassData, UpdateClassData } from '../types';
 
 // Fetch all classes
@@ -7,12 +7,8 @@ export const useClasses = () => {
   return useQuery({
     queryKey: ['classes'],
     queryFn: async (): Promise<YogaClass[]> => {
-      const response = await fetch('http://127.0.0.1:54321/rest/v1/yoga_classes?select=*', {
-        headers: {
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
-          'Content-Type': 'application/json'
-        }
+      const response = await fetch(`${REST_URL}/yoga_classes?select=*`, {
+        headers: restHeaders(),
       });
       
       if (!response.ok) {
@@ -58,13 +54,9 @@ export const useCreateClass = () => {
       const startTime = new Date(classData.start_time);
       const endTime = new Date(startTime.getTime() + 60 * 60 * 1000);
 
-      const response = await fetch('http://127.0.0.1:54321/rest/v1/yoga_classes', {
+      const response = await fetch(`${REST_URL}/yoga_classes`, {
         method: 'POST',
-        headers: {
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU',
-          'Content-Type': 'application/json'
-        },
+        headers: restHeaders(),
         body: JSON.stringify({
           ...classData,
           end_time: endTime.toISOString(),
@@ -95,13 +87,9 @@ export const useUpdateClass = () => {
 
   return useMutation({
     mutationFn: async ({ id, ...classData }: UpdateClassData): Promise<YogaClass> => {
-      const response = await fetch(`http://127.0.0.1:54321/rest/v1/yoga_classes?id=eq.${id}`, {
+      const response = await fetch(`${REST_URL}/yoga_classes?id=eq.${id}`, {
         method: 'PATCH',
-        headers: {
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU',
-          'Content-Type': 'application/json'
-        },
+        headers: restHeaders(),
         body: JSON.stringify({
           ...classData,
           updated_at: new Date().toISOString(),
@@ -133,13 +121,9 @@ export const useDeleteClass = () => {
 
   return useMutation({
     mutationFn: async (classId: string): Promise<void> => {
-      const response = await fetch(`http://127.0.0.1:54321/rest/v1/yoga_classes?id=eq.${classId}`, {
+      const response = await fetch(`${REST_URL}/yoga_classes?id=eq.${classId}`, {
         method: 'DELETE',
-        headers: {
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU',
-          'Content-Type': 'application/json'
-        }
+        headers: restHeaders(),
       });
 
       if (!response.ok) {
@@ -158,13 +142,9 @@ export const useCancelClass = () => {
 
   return useMutation({
     mutationFn: async (classId: string): Promise<YogaClass> => {
-      const response = await fetch(`http://127.0.0.1:54321/rest/v1/yoga_classes?id=eq.${classId}`, {
+      const response = await fetch(`${REST_URL}/yoga_classes?id=eq.${classId}`, {
         method: 'PATCH',
-        headers: {
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU',
-          'Content-Type': 'application/json'
-        },
+        headers: restHeaders(),
         body: JSON.stringify({
           is_cancelled: true,
           updated_at: new Date().toISOString(),
@@ -177,12 +157,8 @@ export const useCancelClass = () => {
       }
 
       // Let's verify the update by fetching the updated class
-      const verifyResponse = await fetch(`http://127.0.0.1:54321/rest/v1/yoga_classes?id=eq.${classId}&select=*`, {
-        headers: {
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU',
-          'Content-Type': 'application/json'
-        }
+      const verifyResponse = await fetch(`${REST_URL}/yoga_classes?id=eq.${classId}&select=*`, {
+        headers: restHeaders(),
       });
       
       if (verifyResponse.ok) {

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase, TABLES } from '../utils/supabase';
+import { supabase, TABLES, REST_URL, restHeaders } from '../utils/supabase';
 import type { ClassRegistration } from '../types';
 
 // Fetch user's registrations
@@ -51,12 +51,8 @@ export const useClassRegistrations = (classId: string) => {
         try {
           const userIds = Array.from(new Set(registrations.map(r => r.user_id)));
           const inList = userIds.join(',');
-          const resp = await fetch(`http://127.0.0.1:54321/rest/v1/profiles?id=in.(${inList})&select=id,full_name,email`, {
-            headers: {
-              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
-              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
-              'Content-Type': 'application/json'
-            }
+          const resp = await fetch(`${REST_URL}/profiles?id=in.(${inList})&select=id,full_name,email`, {
+            headers: restHeaders(),
           });
 
           if (resp.ok) {
@@ -66,7 +62,7 @@ export const useClassRegistrations = (classId: string) => {
               ...r,
               profiles: byId.get(r.user_id) ? {
                 id: r.user_id,
-                full_name: byId.get(r.user_id)?.full_name,
+                username: byId.get(r.user_id)?.full_name,
                 email: byId.get(r.user_id)?.email,
               } : undefined,
             }));

@@ -86,7 +86,7 @@ export async function sendCancellationToAllRegistrants(
     user_id: string;
     payment_amount: number;
     profiles?: {
-      full_name?: string;
+      username?: string;
       email?: string;
     };
   }>,
@@ -100,7 +100,7 @@ export async function sendCancellationToAllRegistrants(
     .map(registration =>
       sendCancellationEmail(
         registration.profiles!.email!,
-        registration.profiles?.full_name || 'Valued Customer',
+        registration.profiles?.username || 'Valued Customer',
         className,
         classDate,
         classTime,

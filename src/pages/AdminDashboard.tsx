@@ -8,7 +8,9 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AttendeeModal } from '../components/AttendeeModal';
 import { createWeeklyClasses, getDayOfWeekName } from '../utils/weeklyRepeat';
+import { REST_URL, restHeaders } from '../utils/supabase';
 import { sendCancellationToAllRegistrants } from '../utils/emailFunctions';
+import { ADMIN_EMAIL } from '../admin_user';
 import { 
   PlusIcon, 
   PencilIcon, 
@@ -160,12 +162,8 @@ export const AdminDashboard: React.FC = () => {
         }
 
         // Get registrations for this class
-        const response = await fetch(`http://127.0.0.1:54321/rest/v1/class_registrations?class_id=eq.${classId}&select=*`, {
-          headers: {
-            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
-            'Content-Type': 'application/json'
-          }
+        const response = await fetch(`${REST_URL}/class_registrations?class_id=eq.${classId}&select=*`, {
+          headers: restHeaders(),
         });
 
         let registrations = [];
@@ -282,7 +280,7 @@ export const AdminDashboard: React.FC = () => {
     });
   };
 
-  if (!user || user.email !== 'admin@example.com') {
+  if (!user || user.email !== ADMIN_EMAIL) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">

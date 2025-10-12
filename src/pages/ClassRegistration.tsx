@@ -91,7 +91,7 @@ export const ClassRegistration: React.FC = () => {
       try {
         await sendRegistrationEmail(
           user.email,
-          user.full_name || 'Valued Customer',
+          user.username || 'Valued Customer',
           yogaClass.name,
           formatDate(yogaClass.start_time),
           formatTime(yogaClass.start_time),

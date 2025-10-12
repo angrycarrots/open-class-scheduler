@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useActiveWaiver, useCreateUserWaiver } from '../hooks/useWaivers';
+import { useActiveWaiver } from '../hooks/useWaivers';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -13,6 +13,7 @@ const loginSchema = z.object({
 
 const registerSchema = z.object({
   email: z.string().email('Invalid email address'),
+  username: z.string().min(3, 'Username must be at least 3 characters'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   confirmPassword: z.string(),
   waiverAgreed: z.boolean().refine(val => val === true, {
@@ -31,12 +32,11 @@ export const Auth: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showWaiver, setShowWaiver] = useState(false);
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, requestPasswordReset } = useAuth();
   const navigate = useNavigate();
   
   // Fetch active waiver
-  const { data: activeWaiver, isLoading: waiverLoading } = useActiveWaiver();
-  const createUserWaiver = useCreateUserWaiver();
+  const { data: activeWaiver } = useActiveWaiver();
 
   const loginForm = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -66,7 +66,7 @@ export const Auth: React.FC = () => {
       setError(null);
       
       // Create user account
-      const user = await signUp(data.email, data.password);
+      await signUp(data.email, data.password, data.username);
       
       // Note: Waiver agreement recording is handled separately to avoid auth issues
       // The user has agreed to the waiver terms during signup
@@ -130,6 +130,32 @@ export const Auth: React.FC = () => {
                 {loginForm.formState.errors.password && (
                   <p className="mt-1 text-sm text-red-600">{loginForm.formState.errors.password.message}</p>
                 )}
+                <div className="mt-2 text-right">
+                  <button
+                    type="button"
+                    className="text-sm text-blue-600 hover:text-blue-800 underline"
+                    onClick={async () => {
+                      try {
+                        const email = loginForm.getValues('email');
+                        if (!email) {
+                          setError('Please enter your email first.');
+                          return;
+                        }
+                        setLoading(true);
+                        setError(null);
+                        await requestPasswordReset(email);
+                        setError('If an account exists for that email, a password reset link has been sent.');
+                      } catch (err: unknown) {
+                        const msg = err instanceof Error ? err.message : 'Failed to request password reset';
+                        setError(msg);
+                      } finally {
+                        setLoading(false);
+                      }
+                    }}
+                  >
+                    Forgot your password?
+                  </button>
+                </div>
               </div>
 
               <div>
@@ -144,6 +170,22 @@ export const Auth: React.FC = () => {
             </form>
           ) : (
             <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-6">
+              <div>
+                <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                  Username
+                </label>
+                <div className="mt-1">
+                  <input
+                    {...registerForm.register('username')}
+                    type="text"
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    placeholder="Choose a username"
+                  />
+                </div>
+                {registerForm.formState.errors.username && (
+                  <p className="mt-1 text-sm text-red-600">{registerForm.formState.errors.username.message}</p>
+                )}
+              </div>
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                   Email address

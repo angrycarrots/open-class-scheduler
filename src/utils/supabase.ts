@@ -7,10 +7,16 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables');
 }
 
-// Ensure we use 127.0.0.1 instead of localhost for local development
-const normalizedUrl = supabaseUrl.replace('localhost', '127.0.0.1');
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-export const supabase = createClient(normalizedUrl, supabaseAnonKey);
+// REST configuration derived from env (works for both remote and local)
+export const REST_URL = `${supabaseUrl.replace(/\/$/, '')}/rest/v1`;
+export const AUTH_URL = `${supabaseUrl.replace(/\/$/, '')}/auth/v1`;
+export const restHeaders = () => ({
+  apikey: supabaseAnonKey,
+  Authorization: `Bearer ${supabaseAnonKey}`,
+  'Content-Type': 'application/json',
+});
 
 // Database table names
 export const TABLES = {
