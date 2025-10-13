@@ -8,6 +8,9 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CalendarIcon, ClockIcon, UserIcon, CurrencyDollarIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { sendRegistrationEmail } from '../utils/emailFunctions';
+import venmoIcon from '../assets/venmo.png';
+import paypalIcon from '../assets/paypal.png';
+import zelleIcon from '../assets/zelle.png';
 
 const registrationSchema = z.object({
   payment_amount: z.number()
@@ -25,6 +28,7 @@ export const ClassRegistration: React.FC = () => {
   const createRegistration = useCreateRegistration();
   const [success, setSuccess] = useState<string | null>(null);
   const [registrationError, setRegistrationError] = useState<string | null>(null);
+  const [isRegistered, setIsRegistered] = useState(false);
 
   const form = useForm<RegistrationFormData>({
     resolver: zodResolver(registrationSchema),
@@ -77,7 +81,7 @@ export const ClassRegistration: React.FC = () => {
       });
 
       // Simulate payment processing delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Save registration to database
       await createRegistration.mutateAsync({
@@ -103,12 +107,8 @@ export const ClassRegistration: React.FC = () => {
         // Don't fail registration if email fails
       }
 
+      setIsRegistered(true);
       setSuccess('Registration successful! You will receive a confirmation email shortly.');
-      
-      // Redirect to home after 3 seconds
-      setTimeout(() => {
-        navigate('/');
-      }, 3000);
 
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Registration failed';
@@ -182,38 +182,25 @@ export const ClassRegistration: React.FC = () => {
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white shadow rounded-lg overflow-hidden">
           {/* Class Details */}
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">{yogaClass.name}</h2>
-            
-            <div className="space-y-3">
-              <div className="flex items-center text-sm text-gray-600">
-                <CalendarIcon className="h-4 w-4 mr-2" />
+          <div className="px-6 py-8">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-6">{yogaClass.name}</h2>
+
+            <div className="space-y-2 mb-6">
+              <div className="flex items-start text-base text-gray-700">
+                <span className="mr-2">-</span>
                 <span>{formatDate(yogaClass.start_time)}</span>
               </div>
-              
-              <div className="flex items-center text-sm text-gray-600">
-                <ClockIcon className="h-4 w-4 mr-2" />
+
+              <div className="flex items-start text-base text-gray-700">
+                <span className="mr-2">-</span>
                 <span>{formatTime(yogaClass.start_time)} - {formatTime(yogaClass.end_time)}</span>
               </div>
-              
-              <div className="flex items-center text-sm text-gray-600">
-                <UserIcon className="h-4 w-4 mr-2" />
-                <span>{yogaClass.instructor}</span>
-              </div>
-              
-              <div className="flex items-center text-sm text-gray-600">
-                <CurrencyDollarIcon className="h-4 w-4 mr-2" />
-                <span>Base Price: ${yogaClass.price}</span>
-              </div>
             </div>
 
-            <div className="mt-4 p-4 bg-gray-50 rounded-md">
-              <p className="text-sm text-gray-700">{yogaClass.brief_description}</p>
-            </div>
-          </div>
+            <p className="text-base text-gray-700 mb-4">{yogaClass.brief_description}</p>
 
-          {/* Registration Form */}
-          <div className="px-6 py-6">
+            <p className="text-base text-gray-700 mb-8">{yogaClass.full_description}</p>
+
             {success && (
               <div className="mb-6 bg-green-50 border border-green-200 rounded-md p-4">
                 <p className="text-green-800">{success}</p>
@@ -226,50 +213,72 @@ export const ClassRegistration: React.FC = () => {
               </div>
             )}
 
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div>
-                <label htmlFor="payment_amount" className="block text-sm font-medium text-gray-700 mb-2">
-                  Payment Amount (${yogaClass.price} - $12)
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <span className="text-gray-500 sm:text-sm">$</span>
-                  </div>
-                  <input
-                    {...form.register('payment_amount', { valueAsNumber: true })}
-                    type="number"
-                    step="0.01"
-                    min={yogaClass.price}
-                    max={12}
-                    className="pl-7 appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    placeholder={yogaClass.price.toString()}
-                  />
-                </div>
-                {form.formState.errors.payment_amount && (
-                  <p className="mt-1 text-sm text-red-600">{form.formState.errors.payment_amount.message}</p>
-                )}
-                <p className="mt-1 text-sm text-gray-500">
-                  You can adjust your payment from the minimum of ${yogaClass.price} up to $12
-                </p>
-              </div>
-
-              <div className="flex justify-end space-x-3">
-                <button
-                  type="button"
-                  onClick={handleBack}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={createRegistration.isPending}
-                  className="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-                >
-                  {createRegistration.isPending ? 'Processing...' : 'Complete Registration'}
-                </button>
-              </div>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <button
+                type="submit"
+                disabled={createRegistration.isPending || isRegistered}
+                className={`px-8 py-3 border border-transparent rounded-md shadow-sm text-base font-medium ${
+                  isRegistered
+                    ? 'bg-gray-400 text-white cursor-not-allowed'
+                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                {createRegistration.isPending ? 'Processing...' : isRegistered ? 'Registered' : 'Register for Class'}
+              </button>
             </form>
+
+            {isRegistered && (
+              <div className="mt-8">
+                <p className="text-base text-gray-700 mb-4">
+                  Suggested donation: ${yogaClass.price}
+                </p>
+
+                <p className="text-base text-gray-700 mb-6">
+                  Click the icon below to go to the payment page:
+                </p>
+
+                <div className="flex items-center space-x-6">
+                  <a
+                    href="https://venmo.com/mathanas"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-shrink-0 hover:opacity-80 transition-opacity"
+                  >
+                    <img
+                      src={venmoIcon}
+                      alt="Venmo"
+                      className="h-16 w-16 object-contain"
+                    />
+                  </a>
+
+                  <a
+                    href="https://paypal.me/michaelathanas"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-shrink-0 hover:opacity-80 transition-opacity"
+                  >
+                    <img
+                      src={paypalIcon}
+                      alt="PayPal"
+                      className="h-16 w-16 object-contain"
+                    />
+                  </a>
+
+                  <a
+                    href="https://www.zellepay.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-shrink-0 hover:opacity-80 transition-opacity"
+                  >
+                    <img
+                      src={zelleIcon}
+                      alt="Zelle"
+                      className="h-16 w-16 object-contain"
+                    />
+                  </a>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </main>
