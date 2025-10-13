@@ -10,10 +10,9 @@ import { AdminWaiver } from './pages/AdminWaiver';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import './App.css';
 
-// Create a client
 const queryClient = new QueryClient();
 
-function App() {
+export const OpenClassScheduler: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
@@ -33,6 +32,6 @@ function App() {
       </AuthProvider>
     </QueryClientProvider>
   );
-}
+};
 
-export default App;
+export default OpenClassScheduler;
