@@ -11,6 +11,7 @@ import { sendRegistrationEmail } from '../utils/emailFunctions';
 import venmoIcon from '../assets/venmo.png';
 import paypalIcon from '../assets/paypal.png';
 import zelleIcon from '../assets/zelle.png';
+import squareIcon from '../assets/square.png';
 
 const registrationSchema = z.object({
   payment_amount: z.number()
@@ -276,6 +277,23 @@ export const ClassRegistration: React.FC = () => {
                       className="h-16 w-16 object-contain"
                     />
                   </a>
+
+                  <a
+                    href="https://square.link/u/Tu0fPAWO?src=embd"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-shrink-0 hover:opacity-80 transition-opacity"
+                  >
+                    <img
+                      src={squareIcon}
+                      alt="Square"
+                      className="h-16 w-16 object-contain"
+                    />
+                  </a>
+
+
+
+                  
                 </div>
               </div>
             )}

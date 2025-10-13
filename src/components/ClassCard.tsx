@@ -16,6 +16,7 @@ export const ClassCard: React.FC<ClassCardProps> = ({
   onUnregister,
 }) => {
   const [showDetails, setShowDetails] = useState(false);
+  const [showUnregisterDialog, setShowUnregisterDialog] = useState(false);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -42,6 +43,25 @@ export const ClassCard: React.FC<ClassCardProps> = ({
 
   const dateInfo = formatDate(yogaClass.start_time);
   const tomorrow = isTomorrow(yogaClass.start_time);
+
+  const handleUnregisterClick = () => {
+    if (isBooked) {
+      setShowUnregisterDialog(true);
+    } else {
+      onRegister(yogaClass.id);
+    }
+  };
+
+  const handleConfirmUnregister = () => {
+    if (onUnregister) {
+      onUnregister(yogaClass.id);
+    }
+    setShowUnregisterDialog(false);
+  };
+
+  const handleCancelUnregister = () => {
+    setShowUnregisterDialog(false);
+  };
 
   return (
     <div className="border-b border-gray-200 py-6">
@@ -108,7 +128,7 @@ export const ClassCard: React.FC<ClassCardProps> = ({
           {/* Register Button */}
           <div className="ml-6 flex-shrink-0">
             <button
-              onClick={() => (isBooked ? onUnregister && onUnregister(yogaClass.id) : onRegister(yogaClass.id))}
+              onClick={handleUnregisterClick}
               disabled={yogaClass.is_cancelled}
               className={`px-6 py-2 rounded font-medium transition-colors ${
                 yogaClass.is_cancelled
@@ -126,6 +146,34 @@ export const ClassCard: React.FC<ClassCardProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Unregister Confirmation Dialog */}
+      {showUnregisterDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Confirm Unregister
+            </h3>
+            <p className="text-gray-700 mb-6">
+              Are you sure you want to unregister from <strong>{yogaClass.name}</strong>?
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={handleCancelUnregister}
+                className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmUnregister}
+                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

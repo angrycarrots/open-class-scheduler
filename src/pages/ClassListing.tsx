@@ -15,11 +15,11 @@ export const ClassListing: React.FC = () => {
   const { data: classes = [], isLoading: loading, error } = useClasses();
 
   // Fetch current user's registrations and build a quick lookup set
-  const { data: registrations = [] } = useUserRegistrations(user?.id);
+  const { data: registrations = [], refetch: refetchRegistrations } = useUserRegistrations(user?.id);
   const bookedClassIds = useMemo(() => new Set(registrations.map(r => r.class_id)), [registrations]);
   const registrationIdByClassId = useMemo(() => new Map(registrations.map(r => [r.class_id, r.id])), [registrations]);
 
-  const { mutate: cancelRegistration } = useCancelRegistration();
+  const { mutateAsync: cancelRegistration } = useCancelRegistration();
 
 
 
@@ -46,7 +46,7 @@ export const ClassListing: React.FC = () => {
     navigate('/admin');
   };
 
-  const handleUnregister = (classId: string) => {
+  const handleUnregister = async (classId: string) => {
     if (!user) {
       navigate('/auth');
       return;
@@ -55,7 +55,13 @@ export const ClassListing: React.FC = () => {
     if (!registrationId) {
       return;
     }
-    cancelRegistration(registrationId);
+    try {
+      await cancelRegistration(registrationId);
+      // Manually refetch registrations to ensure UI updates
+      await refetchRegistrations();
+    } catch (error) {
+      console.error('Error unregistering from class:', error);
+    }
   };
 
   const handleSignOut = async () => {

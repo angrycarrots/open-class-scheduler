@@ -131,6 +131,9 @@ CREATE POLICY "Users can create their own registrations" ON class_registrations
 CREATE POLICY "Users can update their own registrations" ON class_registrations
   FOR UPDATE USING (auth.uid() = user_id);
 
+CREATE POLICY "Users can delete their own registrations" ON class_registrations
+  FOR DELETE USING (auth.uid() = user_id);
+
 -- Admin can view all registrations for classes they manage
 CREATE POLICY "Admins can view all registrations" ON class_registrations
   FOR SELECT USING (
@@ -145,8 +148,18 @@ CREATE POLICY "Admins can view all registrations" ON class_registrations
 CREATE POLICY "Admins can update all registrations" ON class_registrations
   FOR UPDATE USING (
     EXISTS (
-      SELECT 1 FROM profiles 
-      WHERE id = auth.uid() 
+      SELECT 1 FROM profiles
+      WHERE id = auth.uid()
+      AND is_admin = TRUE
+    )
+  );
+
+-- Admin can delete all registrations
+CREATE POLICY "Admins can delete all registrations" ON class_registrations
+  FOR DELETE USING (
+    EXISTS (
+      SELECT 1 FROM profiles
+      WHERE id = auth.uid()
       AND is_admin = TRUE
     )
   );

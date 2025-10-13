@@ -162,9 +162,12 @@ export const useCancelRegistration = () => {
 
       if (error) throw error;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['registrations'] });
-      queryClient.invalidateQueries({ queryKey: ['class-registrations'] });
+    onSuccess: async () => {
+      // Invalidate all registration queries (including user-specific ones)
+      await queryClient.invalidateQueries({ queryKey: ['registrations'] });
+      await queryClient.invalidateQueries({ queryKey: ['class-registrations'] });
+      // Force refetch to ensure UI updates immediately
+      await queryClient.refetchQueries({ queryKey: ['registrations'] });
     },
   });
 };
