@@ -162,7 +162,7 @@ export const AdminDashboard: React.FC = () => {
 
         // Get registrations for this class
         const response = await fetch(`${REST_URL}/class_registrations?class_id=eq.${classId}&select=*`, {
-          headers: restHeaders(),
+          headers: await restHeaders(),
         });
 
         let registrations = [];
@@ -209,7 +209,7 @@ export const AdminDashboard: React.FC = () => {
   const onSubmit = async (data: ClassFormData) => {
     try {
       setFormError(null);
-      
+
       if (isCreating) {
         // Handle weekly repeat functionality
         if (data.weekly_repeat > 0) {
@@ -217,7 +217,7 @@ export const AdminDashboard: React.FC = () => {
           const startDate = new Date(data.start_time);
           const dayOfWeek = startDate.getDay();
           const time = `${startDate.getHours().toString().padStart(2, '0')}:${startDate.getMinutes().toString().padStart(2, '0')}`;
-          
+
           const weeklyClasses = createWeeklyClasses(
             {
               name: data.name,
@@ -238,14 +238,14 @@ export const AdminDashboard: React.FC = () => {
           for (const classData of weeklyClasses) {
             await createClass.mutateAsync(classData);
           }
-          
+
           setFormSuccess(`Created ${weeklyClasses.length} classes for ${getDayOfWeekName(dayOfWeek)}s!`);
         } else {
           // Create single class
           await createClass.mutateAsync(data);
           setFormSuccess('Class created successfully!');
         }
-        
+
         setIsCreating(false);
         form.reset();
       } else if (editingClass) {
@@ -254,9 +254,10 @@ export const AdminDashboard: React.FC = () => {
         setEditingClass(null);
         form.reset();
       }
-      
+
       setTimeout(() => setFormSuccess(null), 3000);
     } catch (error) {
+      console.error('onSubmit error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Operation failed';
       setFormError(errorMessage);
     }

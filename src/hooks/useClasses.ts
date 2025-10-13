@@ -8,15 +8,15 @@ export const useClasses = () => {
     queryKey: ['classes'],
     queryFn: async (): Promise<YogaClass[]> => {
       const response = await fetch(`${REST_URL}/yoga_classes?select=*`, {
-        headers: restHeaders(),
+        headers: await restHeaders(),
       });
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
-      
+
       return (data as YogaClass[]) || [];
     },
     retry: 1,
@@ -56,7 +56,7 @@ export const useCreateClass = () => {
 
       const response = await fetch(`${REST_URL}/yoga_classes`, {
         method: 'POST',
-        headers: restHeaders(),
+        headers: await restHeaders(),
         body: JSON.stringify({
           ...classData,
           end_time: endTime.toISOString(),
@@ -87,16 +87,27 @@ export const useUpdateClass = () => {
 
   return useMutation({
     mutationFn: async ({ id, ...classData }: UpdateClassData): Promise<YogaClass> => {
+      // Calculate end time if start_time is being updated (1 hour after start time)
+      const updateData: any = {
+        ...classData,
+        updated_at: new Date().toISOString(),
+      };
+
+      if (classData.start_time) {
+        const startTime = new Date(classData.start_time);
+        const endTime = new Date(startTime.getTime() + 60 * 60 * 1000);
+        updateData.end_time = endTime.toISOString();
+      }
+
       const response = await fetch(`${REST_URL}/yoga_classes?id=eq.${id}`, {
         method: 'PATCH',
-        headers: restHeaders(),
-        body: JSON.stringify({
-          ...classData,
-          updated_at: new Date().toISOString(),
-        })
+        headers: await restHeaders(),
+        body: JSON.stringify(updateData)
       });
 
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Update failed:', errorText);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
@@ -104,13 +115,12 @@ export const useUpdateClass = () => {
       // The actual updated data will be fetched by the query invalidation
       return {
         id,
-        ...classData,
-        updated_at: new Date().toISOString(),
+        ...updateData,
       } as YogaClass;
     },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['classes'] });
-      queryClient.invalidateQueries({ queryKey: ['class', variables.id] });
+    onSuccess: async (_, variables) => {
+      await queryClient.refetchQueries({ queryKey: ['classes'] });
+      await queryClient.refetchQueries({ queryKey: ['class', variables.id] });
     },
   });
 };
@@ -123,7 +133,7 @@ export const useDeleteClass = () => {
     mutationFn: async (classId: string): Promise<void> => {
       const response = await fetch(`${REST_URL}/yoga_classes?id=eq.${classId}`, {
         method: 'DELETE',
-        headers: restHeaders(),
+        headers: await restHeaders(),
       });
 
       if (!response.ok) {
@@ -144,7 +154,7 @@ export const useCancelClass = () => {
     mutationFn: async (classId: string): Promise<YogaClass> => {
       const response = await fetch(`${REST_URL}/yoga_classes?id=eq.${classId}`, {
         method: 'PATCH',
-        headers: restHeaders(),
+        headers: await restHeaders(),
         body: JSON.stringify({
           is_cancelled: true,
           updated_at: new Date().toISOString(),
@@ -158,7 +168,7 @@ export const useCancelClass = () => {
 
       // Let's verify the update by fetching the updated class
       const verifyResponse = await fetch(`${REST_URL}/yoga_classes?id=eq.${classId}&select=*`, {
-        headers: restHeaders(),
+        headers: await restHeaders(),
       });
       
       if (verifyResponse.ok) {

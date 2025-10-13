@@ -8,7 +8,7 @@ export const useActiveWaiver = () => {
     queryKey: ['active-waiver'],
     queryFn: async (): Promise<Waiver | null> => {
       const response = await fetch(`${REST_URL}/waivers?is_active=eq.true&select=*&limit=1`, {
-        headers: restHeaders(),
+        headers: await restHeaders(),
       });
 
       if (!response.ok) {
@@ -29,7 +29,7 @@ export const useWaivers = () => {
     queryKey: ['waivers'],
     queryFn: async (): Promise<Waiver[]> => {
       const response = await fetch(`${REST_URL}/waivers?select=*&order=created_at.desc`, {
-        headers: restHeaders(),
+        headers: await restHeaders(),
       });
 
       if (!response.ok) {
@@ -52,7 +52,7 @@ export const useCreateWaiver = () => {
     mutationFn: async (waiverData: Omit<Waiver, 'id' | 'created_at' | 'updated_at'>) => {
       const response = await fetch(`${REST_URL}/waivers`, {
         method: 'POST',
-        headers: restHeaders(),
+        headers: await restHeaders(),
         body: JSON.stringify(waiverData)
       });
 
@@ -77,7 +77,7 @@ export const useUpdateWaiver = () => {
     mutationFn: async ({ id, ...waiverData }: Partial<Waiver> & { id: string }) => {
       const response = await fetch(`${REST_URL}/waivers?id=eq.${id}`, {
         method: 'PATCH',
-        headers: restHeaders(),
+        headers: await restHeaders(),
         body: JSON.stringify(waiverData)
       });
 
@@ -102,7 +102,7 @@ export const useDeleteWaiver = () => {
     mutationFn: async (id: string) => {
       const response = await fetch(`${REST_URL}/waivers?id=eq.${id}`, {
         method: 'DELETE',
-        headers: restHeaders(),
+        headers: await restHeaders(),
       });
 
       if (!response.ok) {
@@ -126,7 +126,7 @@ export const useCreateUserWaiver = () => {
     mutationFn: async (userWaiverData: Omit<UserWaiver, 'id'>) => {
       const response = await fetch(`${REST_URL}/user_waivers`, {
         method: 'POST',
-        headers: restHeaders(),
+        headers: await restHeaders(),
         body: JSON.stringify(userWaiverData)
       });
 
