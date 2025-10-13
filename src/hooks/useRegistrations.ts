@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase, TABLES, REST_URL, restHeaders } from '../utils/supabase';
+import { supabase, TABLES } from '../utils/supabase';
 import type { ClassRegistration } from '../types';
 
 // Fetch user's registrations
@@ -46,17 +46,16 @@ export const useClassRegistrations = (classId: string) => {
       if (error) throw error;
       const registrations = data || [];
 
-      // Attempt to enrich with profile data via REST if we have user IDs
+      // Attempt to enrich with profile data via Supabase if we have user IDs
       if (registrations.length > 0) {
         try {
           const userIds = Array.from(new Set(registrations.map(r => r.user_id)));
-          const inList = userIds.join(',');
-          const resp = await fetch(`${REST_URL}/profiles?id=in.(${inList})&select=id,full_name,email`, {
-            headers: restHeaders(),
-          });
+          const { data: profiles, error: profilesError } = await supabase
+            .from(TABLES.PROFILES)
+            .select('id, full_name, email')
+            .in('id', userIds);
 
-          if (resp.ok) {
-            const profiles: Array<{ id: string; full_name?: string; email?: string }> = await resp.json();
+          if (!profilesError && profiles) {
             const byId = new Map(profiles.map(p => [p.id, p] as const));
             return registrations.map(r => ({
               ...r,
