@@ -62,10 +62,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (error) throw error;
 
       const profile = profileData ?? null;
-
       const userProfile: User = {
         id: supabaseUser.id,
         email: supabaseUser.email || '',
+        is_admin: profile?.is_admin ?? false,
         username: profile?.full_name || undefined,
         avatar_url: profile?.avatar_url || 'avatar.png',
         created_at: supabaseUser.created_at,
@@ -79,6 +79,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const userProfile: User = {
         id: supabaseUser.id,
         email: supabaseUser.email || '',
+        is_admin: false,
         username: undefined,
         avatar_url: 'avatar.png',
         created_at: supabaseUser.created_at,

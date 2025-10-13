@@ -3,14 +3,14 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AdminDashboard } from '../AdminDashboard'
-import { ADMIN_EMAIL } from '../../admin_user'
 
 // Mock the auth context
 vi.mock('../../contexts/AuthContext', () => ({
   useAuth: () => ({
     user: {
       id: 'admin-user-id',
-      email: ADMIN_EMAIL,
+      email: 'michael@athanas.org',
+      is_admin: true,
       username: 'Admin User',
     },
   }),
