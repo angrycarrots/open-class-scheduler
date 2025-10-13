@@ -94,13 +94,9 @@ export const ClassCard: React.FC<ClassCardProps> = ({
                   {yogaClass.brief_description}
                 </p>
                 
-                <div className="flex items-center text-sm text-gray-500 mb-1">
+                <div className="flex items-center text-sm text-gray-500">
                   <span className="mr-1">👤</span>
                   {yogaClass.instructor}
-                </div>
-                
-                <div className="text-sm text-gray-500">
-                  ${yogaClass.price}
                 </div>
               </div>
               

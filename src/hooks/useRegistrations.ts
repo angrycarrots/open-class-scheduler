@@ -57,14 +57,21 @@ export const useClassRegistrations = (classId: string) => {
 
           if (!profilesError && profiles) {
             const byId = new Map(profiles.map(p => [p.id, p] as const));
-            return registrations.map(r => ({
-              ...r,
-              profiles: byId.get(r.user_id) ? {
-                id: r.user_id,
-                username: byId.get(r.user_id)?.full_name,
-                email: byId.get(r.user_id)?.email,
-              } : undefined,
-            }));
+            return registrations.map(r => {
+              const profile = byId.get(r.user_id);
+              if (!profile) {
+                return { ...r };
+              }
+
+              return {
+                ...r,
+                profiles: {
+                  id: r.user_id,
+                  username: profile.full_name || profile.email || undefined,
+                  email: profile.email || undefined,
+                },
+              };
+            });
           }
         } catch (_e) {
           // Swallow enrichment errors and fall back to bare registrations
