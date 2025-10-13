@@ -67,8 +67,8 @@ supabase db dump --data-only --schema public | head -n 50
 1. Go to **Authentication** → **Users**
 2. Click "Add User"
 3. Create admin user:
-   - **Email**: `admin@example.com`
-   - **Password**: `password123` (change in production!)
+   - Set the desired email/password
+   - After signup, update the profile record to set `is_admin = TRUE`
 4. The profile will be auto-created by the trigger
 
 ## 🌐 Step 4: Update Environment Variables
@@ -159,7 +159,7 @@ VITE_INBUCKET_URL="http://127.0.0.1:9000"
 1. **Visit your deployed app**
 2. **Test authentication**:
    - Register new user
-   - Login with admin@example.com
+   - Login with an account marked `is_admin = TRUE`
 3. **Test admin features**:
    - Access admin dashboard
    - Create/edit/delete classes
@@ -194,7 +194,7 @@ vercel --prod
 ## 🛡️ Security Checklist
 
 - [ ] **RLS Policies**: All tables have proper security policies
-- [ ] **Admin Access**: Only admin@example.com can access admin features
+- [ ] **Admin Access**: Only accounts with `profiles.is_admin = TRUE` can access admin features
 - [ ] **Environment Variables**: Sensitive data not in code
 - [ ] **HTTPS**: Production site uses HTTPS
 - [ ] **CORS**: Supabase configured for your domain

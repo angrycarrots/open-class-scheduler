@@ -10,7 +10,6 @@ import { AttendeeModal } from '../components/AttendeeModal';
 import { createWeeklyClasses, getDayOfWeekName } from '../utils/weeklyRepeat';
 import { REST_URL, restHeaders } from '../utils/supabase';
 import { sendCancellationToAllRegistrants } from '../utils/emailFunctions';
-import { ADMIN_EMAIL } from '../admin_user';
 import { 
   PlusIcon, 
   PencilIcon, 
@@ -280,7 +279,7 @@ export const AdminDashboard: React.FC = () => {
     });
   };
 
-  if (!user || user.email !== ADMIN_EMAIL) {
+  if (!user || !user.is_admin) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">

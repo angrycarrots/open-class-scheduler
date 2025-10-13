@@ -8,6 +8,7 @@ CREATE TABLE profiles (
   phone TEXT,
   full_name TEXT,
   avatar_url TEXT DEFAULT 'avatar.png',
+  is_admin BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -72,12 +73,13 @@ CREATE TRIGGER update_class_registrations_updated_at BEFORE UPDATE ON class_regi
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.profiles (id, email, phone, full_name)
+  INSERT INTO public.profiles (id, email, phone, full_name, is_admin)
   VALUES (
     NEW.id,
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'phone', NULL),
-    COALESCE(NEW.raw_user_meta_data->>'full_name', NULL)
+    COALESCE(NEW.raw_user_meta_data->>'full_name', NULL),
+    COALESCE((NEW.raw_user_meta_data->>'is_admin')::boolean, FALSE)
   );
   RETURN NEW;
 END;
@@ -115,7 +117,7 @@ CREATE POLICY "Admins can manage all classes" ON yoga_classes
     EXISTS (
       SELECT 1 FROM profiles 
       WHERE id = auth.uid() 
-      AND email = 'admin@example.com'
+      AND is_admin = TRUE
     )
   );
 
@@ -135,7 +137,7 @@ CREATE POLICY "Admins can view all registrations" ON class_registrations
     EXISTS (
       SELECT 1 FROM profiles 
       WHERE id = auth.uid() 
-      AND email = 'admin@example.com'
+      AND is_admin = TRUE
     )
   );
 
@@ -145,7 +147,7 @@ CREATE POLICY "Admins can update all registrations" ON class_registrations
     EXISTS (
       SELECT 1 FROM profiles 
       WHERE id = auth.uid() 
-      AND email = 'admin@example.com'
+      AND is_admin = TRUE
     )
   );
 

@@ -75,12 +75,12 @@ BEGIN
       FOR ALL USING (
         EXISTS (
           SELECT 1 FROM public.profiles p
-          WHERE p.id = auth.uid() AND p.email = 'admin@example.com'
+          WHERE p.id = auth.uid() AND p.is_admin = TRUE
         )
       ) WITH CHECK (
         EXISTS (
           SELECT 1 FROM public.profiles p
-          WHERE p.id = auth.uid() AND p.email = 'admin@example.com'
+          WHERE p.id = auth.uid() AND p.is_admin = TRUE
         )
       );
   END IF;
@@ -113,7 +113,7 @@ BEGIN
       FOR SELECT USING (
         EXISTS (
           SELECT 1 FROM public.profiles p
-          WHERE p.id = auth.uid() AND p.email = 'admin@example.com'
+          WHERE p.id = auth.uid() AND p.is_admin = TRUE
         )
       );
   END IF;

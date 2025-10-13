@@ -11,6 +11,7 @@ CREATE TABLE profiles (
   phone TEXT,
   full_name TEXT,
   avatar_url TEXT DEFAULT 'avatar.png',
+  is_admin BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -44,6 +45,27 @@ CREATE TABLE class_registrations (
   UNIQUE(class_id, user_id)
 );
 
+-- Create waivers table
+CREATE TABLE waivers (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  version INTEGER NOT NULL DEFAULT 1,
+  title TEXT NOT NULL,
+  body_markdown TEXT NOT NULL,
+  is_active BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
+-- Create user_waivers table
+CREATE TABLE user_waivers (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  waiver_id UUID NOT NULL REFERENCES waivers(id) ON DELETE CASCADE,
+  agreed_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  waiver_snapshot_md TEXT NOT NULL,
+  UNIQUE(user_id, waiver_id)
+);
+
 -- Create indexes for better performance
 CREATE INDEX idx_yoga_classes_start_time ON yoga_classes(start_time);
 CREATE INDEX idx_yoga_classes_instructor ON yoga_classes(instructor);
@@ -71,16 +93,23 @@ CREATE TRIGGER update_yoga_classes_updated_at BEFORE UPDATE ON yoga_classes
 CREATE TRIGGER update_class_registrations_updated_at BEFORE UPDATE ON class_registrations
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+CREATE TRIGGER update_waivers_updated_at BEFORE UPDATE ON waivers
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_user_waivers_updated_at BEFORE UPDATE ON user_waivers
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
 -- Function to automatically create profile on user signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.profiles (id, email, phone, full_name)
+  INSERT INTO public.profiles (id, email, phone, full_name, is_admin)
   VALUES (
     NEW.id,
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'phone', NULL),
-    COALESCE(NEW.raw_user_meta_data->>'full_name', NULL)
+    COALESCE(NEW.raw_user_meta_data->>'full_name', NULL),
+    COALESCE((NEW.raw_user_meta_data->>'is_admin')::boolean, FALSE)
   );
   RETURN NEW;
 END;
@@ -97,6 +126,8 @@ CREATE TRIGGER on_auth_user_created
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE yoga_classes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE class_registrations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE waivers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_waivers ENABLE ROW LEVEL SECURITY;
 
 -- Profiles policies
 CREATE POLICY "Users can view their own profile" ON profiles
@@ -122,7 +153,7 @@ CREATE POLICY "Admins can manage all classes" ON yoga_classes
     EXISTS (
       SELECT 1 FROM profiles 
       WHERE id = auth.uid() 
-      AND email = 'admin@example.com'
+      AND is_admin = TRUE
     )
   );
 
@@ -142,7 +173,7 @@ CREATE POLICY "Admins can view all registrations" ON class_registrations
     EXISTS (
       SELECT 1 FROM profiles 
       WHERE id = auth.uid() 
-      AND email = 'admin@example.com'
+      AND is_admin = TRUE
     )
   );
 
@@ -152,7 +183,42 @@ CREATE POLICY "Admins can update all registrations" ON class_registrations
     EXISTS (
       SELECT 1 FROM profiles 
       WHERE id = auth.uid() 
-      AND email = 'admin@example.com'
+      AND is_admin = TRUE
+    )
+  );
+
+-- Waivers policies
+CREATE POLICY "Select active waivers (public)" ON waivers
+  FOR SELECT USING (is_active = TRUE);
+
+CREATE POLICY "Admin manage waivers" ON waivers
+  FOR ALL USING (
+    EXISTS (
+      SELECT 1 FROM profiles 
+      WHERE id = auth.uid() 
+      AND is_admin = TRUE
+    )
+  ) WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM profiles 
+      WHERE id = auth.uid() 
+      AND is_admin = TRUE
+    )
+  );
+
+-- User waivers policies
+CREATE POLICY "Users select own user_waivers" ON user_waivers
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users insert own user_waivers" ON user_waivers
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Admin select all user_waivers" ON user_waivers
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM profiles 
+      WHERE id = auth.uid() 
+      AND is_admin = TRUE
     )
   );
 
@@ -179,6 +245,14 @@ SELECT
   yc.is_cancelled
 FROM class_registrations cr
 JOIN yoga_classes yc ON cr.class_id = yc.id;
+
+-- Seed an initial active waiver if none exists
+INSERT INTO waivers (version, title, body_markdown, is_active)
+SELECT 1,
+       'Standard Yoga Participation Waiver',
+       '# Participation Waiver\n\nBy registering, you acknowledge the inherent risks of physical activity and agree to participate responsibly. You certify that you are in suitable health and will inform the instructor of any conditions. You release the organizer and instructors from liability to the fullest extent permitted by law.',
+       TRUE
+WHERE NOT EXISTS (SELECT 1 FROM waivers);
 
 -- Grant necessary permissions
 GRANT USAGE ON SCHEMA public TO anon, authenticated;

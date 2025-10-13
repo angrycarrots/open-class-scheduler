@@ -48,7 +48,7 @@ cp env.template .env.local
 - Automatic profile creation on user signup
 - Updated timestamps triggers
 - Sample data for testing
-- Admin user setup (admin@example.com)
+- Admin role flag stored on `profiles.is_admin`
 
 ### Views Created
 - `class_details` - Class information with registration counts
@@ -94,7 +94,7 @@ node test-supabase.js
 - Test login functionality
 
 ### 3. Test Admin Access
-- Register with email: admin@example.com
+- Create or promote an account by setting `profiles.is_admin = TRUE`
 - Navigate to /admin
 - Test class creation and management
 
@@ -115,7 +115,7 @@ The schema includes sample yoga classes:
 - Admins have full access to all data
 
 ### Admin Access
-- Admin user: admin@example.com
+- Accounts with `profiles.is_admin = TRUE`
 - Full CRUD operations on classes
 - View all registrations and attendees
 - Manage class schedules
