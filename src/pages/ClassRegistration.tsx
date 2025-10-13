@@ -240,7 +240,7 @@ export const ClassRegistration: React.FC = () => {
 
                 <div className="flex items-center space-x-6">
                   <a
-                    href="https://venmo.com/mathanas"
+                    href={import.meta.env.VITE_VENMO_LINK}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-shrink-0 hover:opacity-80 transition-opacity"
@@ -253,7 +253,7 @@ export const ClassRegistration: React.FC = () => {
                   </a>
 
                   <a
-                    href="https://paypal.me/michaelathanas"
+                    href={import.meta.env.VITE_PAYPAL_LINK}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-shrink-0 hover:opacity-80 transition-opacity"
@@ -266,7 +266,7 @@ export const ClassRegistration: React.FC = () => {
                   </a>
 
                   <a
-                    href="https://www.zellepay.com/"
+                    href={import.meta.env.VITE_ZELLE_LINK}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-shrink-0 hover:opacity-80 transition-opacity"
@@ -279,7 +279,7 @@ export const ClassRegistration: React.FC = () => {
                   </a>
 
                   <a
-                    href="https://square.link/u/Tu0fPAWO?src=embd"
+                    href={import.meta.env.VITE_SQUARE_LINK}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-shrink-0 hover:opacity-80 transition-opacity"
@@ -293,7 +293,7 @@ export const ClassRegistration: React.FC = () => {
 
 
 
-                  
+
                 </div>
               </div>
             )}
