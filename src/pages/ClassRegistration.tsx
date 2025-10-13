@@ -74,12 +74,6 @@ export const ClassRegistration: React.FC = () => {
 
       // TODO: Implement Square payment processing here
       // For now, we'll simulate a successful payment
-      console.log('Processing payment:', {
-        classId: yogaClass.id,
-        userId: user.id,
-        amount: data.payment_amount,
-        className: yogaClass.name,
-      });
 
       // Simulate payment processing delay
       await new Promise(resolve => setTimeout(resolve, 1000));

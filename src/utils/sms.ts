@@ -14,21 +14,14 @@ export const sendSMS = async (
   _config?: SMSConfig
 ): Promise<boolean> => {
   try {
-    // For now, we'll just log the SMS
-    // In production, you would integrate with a real SMS service
-    console.log('SMS would be sent:', {
-      to,
-      message,
-      timestamp: new Date().toISOString(),
-    });
-
     // Placeholder for actual SMS service integration
+    // In production, you would integrate with a real SMS service
     // Example with Twilio:
     /*
     const accountSid = config?.apiKey;
     const authToken = process.env.TWILIO_AUTH_TOKEN;
     const client = require('twilio')(accountSid, authToken);
-    
+
     await client.messages.create({
       body: message,
       from: config?.phoneNumber,
