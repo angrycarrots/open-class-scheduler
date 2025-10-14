@@ -1,11 +1,23 @@
 {
-  "name": "yoga_c",
-  "private": true,
-  "version": "0.0.0",
+  "name": "open-class-scheduler",
+  "version": "0.1.0",
   "type": "module",
+  "main": "dist/open-class-scheduler.cjs",
+  "module": "dist/open-class-scheduler.es.js",
+  "types": "dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/open-class-scheduler.es.js",
+      "require": "./dist/open-class-scheduler.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -p tsconfig.lib.json && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",

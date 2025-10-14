@@ -34,4 +34,3 @@ export const OpenClassScheduler: React.FC = () => {
   );
 };
 
-export default OpenClassScheduler;

@@ -9,7 +9,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AttendeeModal } from '../components/AttendeeModal';
 import { createWeeklyClasses, getDayOfWeekName } from '../utils/weeklyRepeat';
 import { REST_URL, restHeaders } from '../utils/supabase';
-import { sendCancellationToAllRegistrants } from '../utils/emailFunctions';
 import { 
   PlusIcon, 
   PencilIcon, 

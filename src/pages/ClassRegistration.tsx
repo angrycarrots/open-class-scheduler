@@ -6,7 +6,7 @@ import { useCreateRegistration } from '../hooks/useRegistrations';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CalendarIcon, ClockIcon, UserIcon, CurrencyDollarIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { sendRegistrationEmail } from '../utils/emailFunctions';
 import venmoIcon from '../assets/venmo.png';
 import paypalIcon from '../assets/paypal.png';

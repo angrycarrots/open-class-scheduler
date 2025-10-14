@@ -23,38 +23,19 @@ export interface EmailData {
 
 // Local development email service using Inbucket
 class InbucketEmailService implements EmailService {
-  private baseUrl: string;
-
-  constructor() {
-    this.baseUrl = import.meta.env.VITE_INBUCKET_URL || 'http://127.0.0.1:9000';
-  }
-
-  async sendEmail(to: string, subject: string, htmlBody: string, textBody?: string): Promise<void> {
+  async sendEmail(): Promise<void> {
     try {
       // Development noop (no console noise)
-      
     } catch (error) {
       console.error('Email service error:', error);
       // Don't throw error to avoid blocking user operations
     }
   }
-
-  private stripHtml(html: string): string {
-    // Simple HTML to text conversion
-    return html
-      .replace(/<[^>]*>/g, '')
-      .replace(/&nbsp;/g, ' ')
-      .replace(/&amp;/g, '&')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&quot;/g, '"')
-      .trim();
-  }
 }
 
 // Production email service (placeholder for future implementation)
 class ProductionEmailService implements EmailService {
-  async sendEmail(to: string, subject: string, htmlBody: string, textBody?: string): Promise<void> {
+  async sendEmail(): Promise<void> {
     // TODO: Implement production email provider (SendGrid, Resend, etc.)
     // No-op in placeholder
   }

@@ -8,9 +8,8 @@ export interface SMSConfig {
 }
 
 export const sendSMS = async (
-  to: string,
-  message: string,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _to: string,
+  _message: string,
   _config?: SMSConfig
 ): Promise<boolean> => {
   try {
