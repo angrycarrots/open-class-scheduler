@@ -173,6 +173,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (error) throw error;
   };
 
+  const changePassword = async (currentPassword: string, newPassword: string) => {
+    if (!user) throw new Error('No user logged in');
+
+    // First, verify the current password by attempting to sign in
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: user.email,
+      password: currentPassword,
+    });
+
+    if (signInError) {
+      throw new Error('Current password is incorrect');
+    }
+
+    // If current password is correct, update to new password
+    const { error: updateError } = await supabase.auth.updateUser({
+      password: newPassword,
+    });
+
+    if (updateError) throw updateError;
+  };
+
   const value: AuthContextType = {
     user,
     loading,
@@ -181,6 +202,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     signOut,
     updateProfile,
     requestPasswordReset,
+    changePassword,
   };
 
   return (
