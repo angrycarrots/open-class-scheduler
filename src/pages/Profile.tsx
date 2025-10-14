@@ -24,11 +24,8 @@ type ProfileFormData = z.infer<typeof profileSchema>;
 type PasswordFormData = z.infer<typeof passwordSchema>;
 
 export const Profile: React.FC = () => {
-  const { user, updateProfile, changePassword } = useAuth();
+  const { user, changePassword } = useAuth();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null);
@@ -58,30 +55,6 @@ export const Profile: React.FC = () => {
       avatar_url: user?.avatar_url || 'avatar.png',
     });
   }, [user?.username, user?.avatar_url]);
-
-  const onSubmit = async (data: ProfileFormData) => {
-    try {
-      setLoading(true);
-      setError(null);
-      setSuccess(null);
-
-      await updateProfile({
-        username: data.username,
-        avatar_url: data.avatar_url || 'avatar.png',
-      });
-
-      setSuccess('Profile updated successfully!');
-      
-      // Clear success message after 3 seconds
-      setTimeout(() => setSuccess(null), 3000);
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update profile';
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleBack = () => {
     navigate('/');
   };
@@ -192,21 +165,6 @@ export const Profile: React.FC = () => {
                 <p className="text-gray-600">{user.email}</p>
               </div>
             </div>
-
-            {/* Success/Error Messages */}
-            {success && (
-              <div className="mb-6 bg-green-50 border border-green-200 rounded-md p-4">
-                <p className="text-green-800">{success}</p>
-              </div>
-            )}
-
-            {error && (
-              <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
-                <p className="text-red-800">{error}</p>
-              </div>
-            )}
-
-
 
             {/* Security Section */}
             <div className="mt-8 pt-8 border-t border-gray-200">
