@@ -43,6 +43,7 @@ export const ClassCard: React.FC<ClassCardProps> = ({
 
   const dateInfo = formatDate(yogaClass.start_time);
   const tomorrow = isTomorrow(yogaClass.start_time);
+  const today = new Date(yogaClass.start_time).toDateString() === new Date().toDateString();
 
   const handleUnregisterClick = () => {
     if (isBooked) {
@@ -65,68 +66,43 @@ export const ClassCard: React.FC<ClassCardProps> = ({
 
   return (
     <div className="border-b border-gray-200 py-6">
-      <div className="flex">
+      <div className="flex flex-row flex-wrap gap-6 sm:flex-nowrap sm:items-start sm:gap-8">
         {/* Left Column - Date & Time */}
-        <div className="w-24 flex-shrink-0 mr-6">
-          <div className="text-center">
-            <div className="text-3xl font-bold text-gray-900">{dateInfo.day}</div>
-            <div className="text-sm text-gray-600">{dateInfo.dayName}</div>
-            <div className="text-sm text-gray-600">{dateInfo.month}</div>
-            {tomorrow && (
-              <div className="mt-1">
-                <span className="inline-block bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-                  Tomorrow
-                </span>
-              </div>
-            )}
+        <div className="w-28 flex-shrink-0 flex flex-col items-start gap-1 text-left">
+          <div className="flex items-baseline gap-2">
+            <div className="text-4xl font-bold text-gray-900 leading-none">{dateInfo.day}</div>
+            <div className="text-base font-medium text-gray-600">{dateInfo.dayName}</div>
           </div>
+          <div className="text-sm text-gray-600 uppercase tracking-wide">{dateInfo.month}</div>
+          <div className="text-sm font-medium text-gray-700">{dateInfo.time}</div>
+          {(today || tomorrow) && (
+            <div className="mt-1">
+              <span className="inline-block bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full uppercase tracking-wide">
+                {today ? 'Today' : 'Tomorrow'}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Right Column - Class Details & Action */}
-        <div className="flex-1 flex justify-between items-start">
-          <div className="flex-1">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                  {yogaClass.name}
-                </h3>
-                <p className="text-sm text-gray-600 mb-2 line-clamp-2">
-                  {yogaClass.brief_description}
-                </p>
-                
-                <div className="flex items-center text-sm text-gray-500">
-                  <span className="mr-1">👤</span>
-                  {yogaClass.instructor}
-                </div>
-              </div>
-              
-              <div className="text-right ml-4">
-                <div className="text-sm text-gray-600 mb-2">{dateInfo.time}</div>
-                <button
-                  onClick={() => setShowDetails(!showDetails)}
-                  className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                >
-                  &gt; Details
-                </button>
-              </div>
-            </div>
-
-            {/* Expandable Details */}
-            {showDetails && (
-              <div className="mt-4 p-4 bg-gray-50 rounded-md">
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  {yogaClass.full_description}
-                </p>
-              </div>
-            )}
+        <div className="flex-1 min-w-[12rem] flex flex-col gap-3">
+          <h3 className="text-xl font-semibold text-[#A8A38F] leading-snug">
+            {yogaClass.name}
+          </h3>
+          <div className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
+            {yogaClass.instructor}
           </div>
-
-          {/* Register Button */}
-          <div className="ml-6 flex-shrink-0">
+          <button
+            onClick={() => setShowDetails(!showDetails)}
+            className="inline-flex items-center text-sm font-medium text-[#6B4E44] hover:text-[#8b3625]"
+          >
+            &gt; Details
+          </button>
+          <div className="flex flex-col gap-2 sm:items-end">
             <button
               onClick={handleUnregisterClick}
               disabled={yogaClass.is_cancelled}
-              className={`px-6 py-2 rounded font-medium transition-colors ${
+              className={`w-full sm:w-auto px-6 py-2 rounded font-medium transition-colors ${
                 yogaClass.is_cancelled
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   : isBooked
@@ -137,9 +113,18 @@ export const ClassCard: React.FC<ClassCardProps> = ({
               {yogaClass.is_cancelled ? 'CANCELLED' : isBooked ? 'UNREGISTER' : 'REGISTER'}
             </button>
             {isBooked && !yogaClass.is_cancelled && (
-              <div className="mt-2 text-xs text-gray-600 text-center">You are registered.</div>
+              <div className="text-xs text-gray-600 text-center sm:text-right">You are registered.</div>
             )}
           </div>
+
+          {/* Expandable Details */}
+          {showDetails && (
+            <div className="mt-2 p-4 bg-gray-50 rounded-md">
+              <p className="text-gray-700 text-sm leading-relaxed">
+                {yogaClass.full_description}
+              </p>
+            </div>
+          )}
         </div>
       </div>
 

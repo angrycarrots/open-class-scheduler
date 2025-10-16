@@ -98,10 +98,10 @@ export const ClassListing: React.FC = () => {
       {/* Header */}
       <header className="bg-[#8b3625] shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <h1 className="text-xl font-bold text-white">Classes</h1>
-            
-            <div className="flex items-center space-x-4">
+          <div className="flex flex-col gap-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:py-0 sm:h-16">
+
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+            <h1 className="text-2xl font-bold text-white">Classes</h1>
               {user ? (
                 <>
                   <button
@@ -128,7 +128,7 @@ export const ClassListing: React.FC = () => {
               ) : (
                 <button
                   onClick={handleLogin}
-                  className="text-white hover:text-gray-200 px-3 py-2 rounded-md text-xl font-medium flex items-center"
+                  className="text-white hover:text-gray-200 px-3 py-2 rounded-md text-base font-medium flex items-center"
                 >
                   Login →
                 </button>
