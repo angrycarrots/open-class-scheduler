@@ -196,15 +196,17 @@ export const ClassRegistration: React.FC = () => {
 
             <p className="text-base text-gray-700 mb-8">{yogaClass.full_description}</p>
 
-            {success && (
-              <div className="mb-6 bg-green-50 border border-green-200 rounded-md p-4">
-                <p className="text-green-800">{success}</p>
-              </div>
-            )}
 
             {registrationError && (
               <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
                 <p className="text-red-800">{registrationError}</p>
+              </div>
+            )}
+
+
+            {success && (
+              <div className="mb-6 bg-green-50 border border-green-200 rounded-md p-4">
+                <p className="text-green-800">{success}</p>
               </div>
             )}
 
@@ -229,7 +231,7 @@ export const ClassRegistration: React.FC = () => {
                 </p>
 
                 <p className="text-base text-gray-700 mb-6">
-                  Click the icon below to go to the payment page:
+                  Click the icon below to go to the payment page specifically for RoseGarden.Yoga:
                 </p>
 
                 <div className="flex items-center space-x-6">
