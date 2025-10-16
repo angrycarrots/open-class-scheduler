@@ -12,7 +12,6 @@ const profileSchema = z.object({
 });
 
 const passwordSchema = z.object({
-  currentPassword: z.string().min(1, 'Current password is required'),
   newPassword: z.string().min(6, 'New password must be at least 6 characters'),
   confirmPassword: z.string().min(1, 'Please confirm your new password'),
 }).refine((data) => data.newPassword === data.confirmPassword, {
@@ -42,7 +41,6 @@ export const Profile: React.FC = () => {
   const passwordForm = useForm<PasswordFormData>({
     resolver: zodResolver(passwordSchema),
     defaultValues: {
-      currentPassword: '',
       newPassword: '',
       confirmPassword: '',
     },
@@ -65,7 +63,7 @@ export const Profile: React.FC = () => {
       setPasswordError(null);
       setPasswordSuccess(null);
 
-      await changePassword(data.currentPassword, data.newPassword);
+      await changePassword(data.newPassword);
 
       setPasswordSuccess('Password changed successfully!');
 
@@ -210,23 +208,6 @@ export const Profile: React.FC = () => {
             )}
 
             <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-4">
-              <div>
-                <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700">
-                  Current Password
-                </label>
-                <div className="mt-1">
-                  <input
-                    {...passwordForm.register('currentPassword')}
-                    type="password"
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    placeholder="Enter your current password"
-                  />
-                </div>
-                {passwordForm.formState.errors.currentPassword && (
-                  <p className="mt-1 text-sm text-red-600">{passwordForm.formState.errors.currentPassword.message}</p>
-                )}
-              </div>
-
               <div>
                 <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">
                   New Password
