@@ -77,9 +77,14 @@ export const ClassListing: React.FC = () => {
 
   // Sort classes by date (ascending)
   const sortedClasses = useMemo(() => {
-    return [...classes].sort((a, b) => {
-      return new Date(a.start_time).getTime() - new Date(b.start_time).getTime();
-    });
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
+    return [...classes]
+      .filter((yogaClass) => new Date(yogaClass.start_time).getTime() >= startOfToday.getTime())
+      .sort((a, b) => {
+        return new Date(a.start_time).getTime() - new Date(b.start_time).getTime();
+      });
   }, [classes]);
 
   if (loading) {
@@ -100,8 +105,9 @@ export const ClassListing: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:py-0 sm:h-16">
 
-            <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4 w-full">
             <h1 className="text-2xl font-bold text-white">Classes</h1>
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4 ml-auto">
               {user ? (
                 <>
                   <button
@@ -134,6 +140,7 @@ export const ClassListing: React.FC = () => {
                 </button>
               )}
             </div>
+          </div>
           </div>
         </div>
       </header>
