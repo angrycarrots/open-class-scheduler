@@ -99,6 +99,7 @@ temp/
 
 # Supabase
 .supabase/
+supabase/backups/
 
 # Test files
 test-*.js
