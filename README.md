@@ -1,6 +1,12 @@
-# 🧘‍♀️ Yoga Class Scheduling System
+# 🧘‍♀️ Open Class Scheduling System
 
-A comprehensive React-based yoga class scheduling system with authentication, payment processing, and admin functionality. Built with modern web technologies and a focus on user experience.  Great solution for small studios or individual.  A inexpensive alternative to GymCatch, Aquity and Taramala.
+As a yoga studio owner, I need a comprehensive React-based yoga class scheduling system with authentication, payment processing, and admin functionality. Built with modern web technologies and a focus on user experience.  Great solution for small studios or individual.  A inexpensive alternative to GymCatch, Aquity and Taramala.
+
+Makes use of Supabase for the database and authentication.  I use the free version.  I deploy on Azure Static Web Apps - free version.
+
+Rather than integrated payment processing, I use external payment processors.  I use Square for in person payments and PayPal for online payments.  I use Venmo for online payments.  I use Zelle for online payments.  This opens more payment options for the studio owner and allows for more flexibility in payment processing with fewer fees.
+
+I use this in production for my yoga studio for donation classes - it works great.  I would like to see the project grow and improve.  I am open to contributions and suggestions.
 
 ## ✨ Features
 
@@ -29,6 +35,12 @@ A comprehensive React-based yoga class scheduling system with authentication, pa
 - SMS confirmation system (ready for integration)
 - User profile customization
 
+### 📊 Embedded solution for an existing web site
+- No need to build a separate website
+- Can be embedded in an existing website  - I use it in production for my yoga studio with an iframe 
+- Can be used as a standalone application
+
+
 ## 🛠️ Tech Stack
 
 ### Frontend
@@ -40,7 +52,7 @@ A comprehensive React-based yoga class scheduling system with authentication, pa
 - **React Query** for data fetching and caching
 
 ### Backend
-- **Supabase** for database and authentication
+- **Supabase** for database and authentication - I use the free version.
 - **PostgreSQL** with Row Level Security
 - **Real-time subscriptions** for live updates
 
@@ -53,7 +65,7 @@ A comprehensive React-based yoga class scheduling system with authentication, pa
 
 ### Prerequisites
 - Node.js 18+ and npm
-- Docker Desktop (for local Supabase development)
+- Docker Desktop (optional, for local Supabase development)
 - Git
 
 ### Installation
@@ -128,9 +140,14 @@ src/
 ## 🔧 Environment Variables
 
 ### Required Variables
+see env.template
 ```env
 VITE_SUPABASE_URL=http://localhost:54321
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_SQUARE_LINK=https://square.link/u/your-square-link
+VITE_VENMO_LINK=https://venmo.com/your-venmo-username
+VITE_PAYPAL_LINK=https://paypal.me/your-paypal-username
+VITE_ZELLE_LINK=https://www.zellepay.com/
 ```
 
 ### Optional Variables (for Phase 5)
@@ -180,36 +197,6 @@ npm run dev
 # Then visit http://localhost:5173 to test the application
 ```
 
-## 🚀 Deployment
-
-### Local Development
-- Development server: http://localhost:5173
-- Supabase API: http://127.0.0.1:54321
-- Supabase Studio: http://127.0.0.1:54323
-
-### Production
-1. Set up a Supabase project
-2. Update environment variables
-3. Deploy to your preferred hosting platform
-4. Configure custom domain (optional)
-
-## 📈 Current Status
-
-### ✅ Completed Features
-- **Phase 1**: Project Setup & Foundation
-- **Phase 2**: Authentication & User Management
-- **Phase 3**: Core Components
-- **Phase 4**: Admin Functionality
-- **Supabase Setup**: Complete local development environment
-
-### 🔄 In Progress
-- **Phase 5**: Payment Integration & Polish
-
-### 📋 Roadmap
-- Square payment integration
-- Enhanced user experience
-- Performance optimization
-- Production deployment
 
 ## 🤝 Contributing
 
