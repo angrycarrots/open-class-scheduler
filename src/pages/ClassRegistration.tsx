@@ -174,13 +174,13 @@ export const ClassRegistration: React.FC = () => {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="bg-white shadow rounded-lg overflow-hidden">
           {/* Class Details */}
-          <div className="px-6 py-8">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-6">{yogaClass.name}</h2>
+          <div className="px-6 py-0">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">{yogaClass.name}</h2>
 
-            <div className="space-y-2 mb-6">
+            <div className="space-y-1 mb-4">
               <div className="flex items-start text-base text-gray-700">
                 <span className="mr-2">-</span>
                 <span>{formatDate(yogaClass.start_time)}</span>
