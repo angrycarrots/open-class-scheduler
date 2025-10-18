@@ -194,7 +194,7 @@ export const ClassRegistration: React.FC = () => {
 
             <p className="text-base text-gray-700 mb-4">{yogaClass.brief_description}</p>
 
-            <p className="text-base text-gray-700 mb-8">{yogaClass.full_description}</p>
+
 
 
             {registrationError && (
