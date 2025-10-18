@@ -103,7 +103,7 @@ export const ClassRegistration: React.FC = () => {
       }
 
       setIsRegistered(true);
-      setSuccess('Registration successful! You will receive a confirmation email shortly.');
+      setSuccess('Registration successful!');
 
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Registration failed';
