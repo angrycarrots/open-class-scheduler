@@ -115,12 +115,17 @@ export const AdminDashboard: React.FC = () => {
     if (yogaClass) {
       setEditingClass(classId);
       setIsCreating(false);
+
+      const d = new Date(yogaClass.start_time);
+      const pad = (n: number) => n.toString().padStart(2, '0');
+      const localStr = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+
       form.reset({
         name: yogaClass.name,
         brief_description: yogaClass.brief_description,
         full_description: yogaClass.full_description,
         instructor: yogaClass.instructor,
-        start_time: new Date(yogaClass.start_time).toISOString().slice(0, 16),
+        start_time: localStr,
         price: yogaClass.price,
         weekly_repeat: yogaClass.weekly_repeat,
       });

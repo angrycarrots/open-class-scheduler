@@ -59,6 +59,7 @@ export const useCreateClass = () => {
         headers: await restHeaders(),
         body: JSON.stringify({
           ...classData,
+          start_time: startTime.toISOString(),
           end_time: endTime.toISOString(),
         })
       });
@@ -71,6 +72,7 @@ export const useCreateClass = () => {
       // The actual created data will be fetched by the query invalidation
       return {
         ...classData,
+        start_time: startTime.toISOString(),
         end_time: endTime.toISOString(),
         id: 'temp-id', // This will be replaced when the query refreshes
       } as YogaClass;
@@ -96,6 +98,7 @@ export const useUpdateClass = () => {
       if (classData.start_time) {
         const startTime = new Date(classData.start_time);
         const endTime = new Date(startTime.getTime() + 60 * 60 * 1000);
+        updateData.start_time = startTime.toISOString();
         updateData.end_time = endTime.toISOString();
       }
 
