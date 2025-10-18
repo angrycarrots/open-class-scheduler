@@ -45,6 +45,17 @@ export const ClassRegistration: React.FC = () => {
     }
   }, [yogaClass, form]);
 
+  React.useEffect(() => {
+    if (isRegistered) {
+      const id = window.setTimeout(() => {
+        try {
+          document.getElementById('registration-bottom')?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        } catch {}
+      }, 0);
+      return () => window.clearTimeout(id);
+    }
+  }, [isRegistered]);
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       weekday: 'long',
@@ -177,8 +188,8 @@ export const ClassRegistration: React.FC = () => {
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="bg-white shadow rounded-lg overflow-hidden">
           {/* Class Details */}
-          <div className="px-6 py-0">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">{yogaClass.name}</h2>
+          <div className="px-6 py-2">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-1">{yogaClass.name}</h2>
 
             <div className="space-y-1 mb-4">
               <div className="flex items-start text-base text-gray-700">
@@ -234,17 +245,17 @@ export const ClassRegistration: React.FC = () => {
                   Click the icon below to go to the payment page specifically for RoseGarden.Yoga:
                 </p>
 
-                <div className="flex items-center space-x-6">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 w-full">
                   <a
                     href={import.meta.env.VITE_VENMO_LINK}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-shrink-0 hover:opacity-80 transition-opacity"
+                    className="justify-self-center inline-flex items-center justify-center bg-white rounded-lg border border-gray-200 shadow-sm p-3 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                   >
                     <img
                       src={venmoIcon}
                       alt="Venmo"
-                      className="h-16 w-16 object-contain"
+                      className="h-12 w-12 md:h-16 md:w-16 object-contain"
                     />
                   </a>
 
@@ -252,7 +263,7 @@ export const ClassRegistration: React.FC = () => {
                     href={import.meta.env.VITE_PAYPAL_LINK}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-shrink-0 hover:opacity-80 transition-opacity"
+                    className="justify-self-center inline-flex items-center justify-center bg-white rounded-lg border border-gray-200 shadow-sm p-3 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                   >
                     <img
                       src={paypalIcon}
@@ -266,6 +277,7 @@ export const ClassRegistration: React.FC = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-shrink-0 hover:opacity-80 transition-opacity"
+                    className="justify-self-center inline-flex items-center justify-center bg-white rounded-lg border border-gray-200 shadow-sm p-3 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                   >
                     <img
                       src={zelleIcon}
@@ -279,6 +291,7 @@ export const ClassRegistration: React.FC = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-shrink-0 hover:opacity-80 transition-opacity"
+                    className="justify-self-center inline-flex items-center justify-center bg-white rounded-lg border border-gray-200 shadow-sm p-3 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                   >
                     <img
                       src={squareIcon}
@@ -291,6 +304,7 @@ export const ClassRegistration: React.FC = () => {
 
 
                 </div>
+                <div id="registration-bottom" />
               </div>
             )}
           </div>
