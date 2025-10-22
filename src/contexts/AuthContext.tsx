@@ -23,33 +23,42 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+useEffect(() => {
+  // Get initial session
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    if (session?.user) {
+      fetchUserProfile(session.user);
+    }
+    setLoading(false);
+  }).catch(err => {
+    console.error('Error getting initial session:', err);
+    setLoading(false);
+  });
+
+  // Listen for auth changes
+  const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    (_event, session) => {
       if (session?.user) {
         fetchUserProfile(session.user);
+      } else {
+        setUser(null);
       }
       setLoading(false);
-    }).catch(err => {
-      console.error('Error getting initial session:', err);
-      setLoading(false);
-    });
+    }
+  );
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        if (session?.user) {
-          // Fire-and-forget; don't block UI on profile fetch
-          fetchUserProfile(session.user);
-        } else {
-          setUser(null);
-        }
-        setLoading(false);
-      }
-    );
+  const onVisibility = () => {
+    if (document.visibilityState === 'visible') {
+      supabase.auth.getSession();
+    }
+  };
+  document.addEventListener('visibilitychange', onVisibility);
 
-    return () => subscription.unsubscribe();
-  }, []);
+  return () => {
+    subscription.unsubscribe();
+    document.removeEventListener('visibilitychange', onVisibility);
+  };
+}, []);
 
   const fetchUserProfile = async (supabaseUser: SupabaseUser) => {
     try {

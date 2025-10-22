@@ -276,8 +276,7 @@ export const ClassRegistration: React.FC = () => {
                     href={import.meta.env.VITE_ZELLE_LINK}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-shrink-0 hover:opacity-80 transition-opacity"
-                    className="justify-self-center inline-flex items-center justify-center bg-white rounded-lg border border-gray-200 shadow-sm p-3 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                    className="flex-shrink-0 hover:opacity-80 transition-opacity justify-self-center inline-flex items-center justify-center bg-white rounded-lg border border-gray-200 shadow-sm p-3 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                   >
                     <img
                       src={zelleIcon}
@@ -290,8 +289,7 @@ export const ClassRegistration: React.FC = () => {
                     href={import.meta.env.VITE_SQUARE_LINK}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-shrink-0 hover:opacity-80 transition-opacity"
-                    className="justify-self-center inline-flex items-center justify-center bg-white rounded-lg border border-gray-200 shadow-sm p-3 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                    className="flex-shrink-0 hover:opacity-80 transition-opacity justify-self-center inline-flex items-center justify-center bg-white rounded-lg border border-gray-200 shadow-sm p-3 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                   >
                     <img
                       src={squareIcon}
