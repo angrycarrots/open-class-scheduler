@@ -6,6 +6,9 @@ import { useClasses } from '../hooks/useClasses';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { useUserRegistrations } from '../hooks/useRegistrations';
 import { useCancelRegistration } from '../hooks/useRegistrations';
+import { useCreateRegistration } from '../hooks/useRegistrations';
+import { useMarkPaymentClicked } from '../hooks/useRegistrations';
+import { sendRegistrationEmail } from '../utils/emailFunctions';
 
 
 
@@ -18,20 +21,71 @@ export const ClassListing: React.FC = () => {
   const { data: registrations = [], refetch: refetchRegistrations } = useUserRegistrations(user?.id);
   const bookedClassIds = useMemo(() => new Set(registrations.map(r => r.class_id)), [registrations]);
   const registrationIdByClassId = useMemo(() => new Map(registrations.map(r => [r.class_id, r.id])), [registrations]);
+  const paymentClickedByClassId = useMemo(() => new Map(registrations.map(r => [r.class_id, !!r.payment_link_clicked])), [registrations]);
 
   const { mutateAsync: cancelRegistration } = useCancelRegistration();
+  const { mutateAsync: createRegistration } = useCreateRegistration();
+  const { mutateAsync: markPaymentClicked } = useMarkPaymentClicked();
 
 
 
-  const handleRegister = (classId: string) => {
+  const handleRegister = async (classId: string) => {
     if (!user) {
-      // Redirect to login/register page
       navigate('/auth');
       return;
     }
-    
-    // Navigate to registration page
-    navigate(`/register/${classId}`);
+
+    const yogaClass = classes.find(c => c.id === classId);
+    if (!yogaClass) return;
+
+    try {
+      await createRegistration({
+        classId: yogaClass.id,
+        userId: user.id,
+        paymentAmount: yogaClass.price,
+      });
+
+      // Send confirmation email (best-effort)
+      try {
+        const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString('en-US', {
+          weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+        });
+        const formatTime = (timeString: string) => new Date(timeString).toLocaleTimeString('en-US', {
+          hour: 'numeric', minute: '2-digit', hour12: true,
+        });
+        await sendRegistrationEmail(
+          user.email,
+          user.username || 'Valued Customer',
+          yogaClass.name,
+          formatDate(yogaClass.start_time),
+          formatTime(yogaClass.start_time),
+          yogaClass.instructor,
+          yogaClass.price,
+        );
+      } catch (_) {
+        // ignore email errors
+      }
+
+      // Refresh registrations so button toggles to UNREGISTER
+      await refetchRegistrations();
+    } catch (e) {
+      console.error('Error registering for class:', e);
+    }
+  };
+
+  const handlePaymentClick = async (classId: string, method: 'venmo' | 'paypal' | 'zelle' | 'square') => {
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+    const registrationId = registrationIdByClassId.get(classId);
+    if (!registrationId) return;
+    try {
+      await markPaymentClicked({ registrationId, method });
+      await refetchRegistrations();
+    } catch (e) {
+      console.error('Error marking payment link clicked:', e);
+    }
   };
 
   const handleLogin = () => {
@@ -192,6 +246,8 @@ export const ClassListing: React.FC = () => {
                 isAuthenticated={!!user}
                 isBooked={bookedClassIds.has(yogaClass.id)}
                 onUnregister={handleUnregister}
+                hasClickedPayment={paymentClickedByClassId.get(yogaClass.id) || false}
+                onPaymentClick={handlePaymentClick}
               />
             ))}
           </div>

@@ -32,6 +32,42 @@ export const useUserRegistrations = (userId?: string) => {
   });
 };
 
+// Mark that the payment link has been clicked for a registration
+export const useMarkPaymentClicked = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      registrationId,
+      method,
+    }: {
+      registrationId: string;
+      method: 'venmo' | 'paypal' | 'zelle' | 'square';
+    }): Promise<ClassRegistration> => {
+      const { data, error } = await supabase
+        .from(TABLES.REGISTRATIONS)
+        .update({
+          payment_link_clicked: true,
+          payment_link_clicked_at: new Date().toISOString(),
+          payment_link_method: method,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', registrationId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as ClassRegistration;
+    },
+    onSuccess: () => {
+      // Best-effort invalidations: general and specific
+      queryClient.invalidateQueries({ queryKey: ['registrations'] });
+      queryClient.invalidateQueries({ queryKey: ['class-registrations'] });
+      // If caller knows userId/classId they can refetch more specifically
+    },
+  });
+};
+
 // Fetch registrations for a specific class (admin only)
 export const useClassRegistrations = (classId: string) => {
   return useQuery({

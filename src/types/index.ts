@@ -48,6 +48,9 @@ export interface ClassRegistration {
   payment_amount: number;
   payment_status: 'pending' | 'completed' | 'failed';
   square_payment_id?: string;
+  payment_link_clicked: boolean;
+  payment_link_clicked_at?: string;
+  payment_link_method?: 'venmo' | 'paypal' | 'zelle' | 'square';
   created_at: string;
   updated_at: string;
   profiles?: {

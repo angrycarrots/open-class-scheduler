@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import type { YogaClass } from '../types';
+import venmoIcon from '../assets/venmo.png';
+import paypalIcon from '../assets/paypal.png';
+import zelleIcon from '../assets/zelle.png';
+import squareIcon from '../assets/square.png';
 
 interface ClassCardProps {
   yogaClass: YogaClass;
@@ -7,6 +11,8 @@ interface ClassCardProps {
   isAuthenticated: boolean;
   isBooked?: boolean;
   onUnregister?: (classId: string) => void;
+  hasClickedPayment?: boolean;
+  onPaymentClick?: (classId: string, method: 'venmo' | 'paypal' | 'zelle' | 'square') => void;
 }
 
 export const ClassCard: React.FC<ClassCardProps> = ({
@@ -14,6 +20,8 @@ export const ClassCard: React.FC<ClassCardProps> = ({
   onRegister,
   isBooked = false,
   onUnregister,
+  hasClickedPayment = false,
+  onPaymentClick,
 }) => {
   const [showDetails, setShowDetails] = useState(false);
   const [showUnregisterDialog, setShowUnregisterDialog] = useState(false);
@@ -116,6 +124,55 @@ export const ClassCard: React.FC<ClassCardProps> = ({
               <div className="text-xs text-gray-600 text-center sm:text-right">You are registered.</div>
             )}
           </div>
+
+          {isBooked && !yogaClass.is_cancelled && !hasClickedPayment && (
+            <div className="mt-3 p-4 bg-gray-50 rounded-md border border-gray-200">
+              <p className="text-sm text-gray-700 mb-2">
+                Suggested donation: ${yogaClass.price}
+              </p>
+              <p className="text-sm text-gray-700 mb-3">
+                Click the icon below to go to the payment page specifically for RoseGarden.Yoga:
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <a
+                  href={import.meta.env.VITE_VENMO_LINK}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="justify-self-center inline-flex items-center justify-center bg-white rounded-lg border border-gray-200 shadow-sm p-2 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#A8A38F] transition"
+                  onClick={() => onPaymentClick?.(yogaClass.id, 'venmo')}
+                >
+                  <img src={venmoIcon} alt="Venmo" className="h-10 w-10 md:h-12 md:w-12 object-contain" />
+                </a>
+                <a
+                  href={import.meta.env.VITE_PAYPAL_LINK}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="justify-self-center inline-flex items-center justify-center bg-white rounded-lg border border-gray-200 shadow-sm p-2 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#A8A38F] transition"
+                  onClick={() => onPaymentClick?.(yogaClass.id, 'paypal')}
+                >
+                  <img src={paypalIcon} alt="PayPal" className="h-12 w-12 object-contain" />
+                </a>
+                <a
+                  href={import.meta.env.VITE_ZELLE_LINK}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="justify-self-center inline-flex items-center justify-center bg-white rounded-lg border border-gray-200 shadow-sm p-2 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#A8A38F] transition"
+                  onClick={() => onPaymentClick?.(yogaClass.id, 'zelle')}
+                >
+                  <img src={zelleIcon} alt="Zelle" className="h-12 w-12 object-contain" />
+                </a>
+                <a
+                  href={import.meta.env.VITE_SQUARE_LINK}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="justify-self-center inline-flex items-center justify-center bg-white rounded-lg border border-gray-200 shadow-sm p-2 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#A8A38F] transition"
+                  onClick={() => onPaymentClick?.(yogaClass.id, 'square')}
+                >
+                  <img src={squareIcon} alt="Square" className="h-12 w-12 object-contain" />
+                </a>
+              </div>
+            </div>
+          )}
 
           {/* Expandable Details */}
           {showDetails && (
