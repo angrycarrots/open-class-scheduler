@@ -1,5 +1,5 @@
 import React from 'react';
-import { XMarkIcon, UserIcon, EnvelopeIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, UserIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
 import { useClassRegistrations } from '../hooks/useRegistrations';
 
 interface AttendeeModalProps {
@@ -9,6 +9,11 @@ interface AttendeeModalProps {
 
 export const AttendeeModal: React.FC<AttendeeModalProps> = ({ classId, onClose }) => {
   const { data: registrations = [], isLoading } = useClassRegistrations(classId || '');
+  const attendeeEmails = React.useMemo(() => (
+    registrations
+      .map(r => r.profiles?.email)
+      .filter((e): e is string => Boolean(e))
+  ), [registrations]);
 
   if (!classId) return null;
 
@@ -53,30 +58,25 @@ export const AttendeeModal: React.FC<AttendeeModalProps> = ({ classId, onClose }
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Contact
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Payment
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {registrations.map((registration) => (
                     <tr key={registration.id}>
                       <td className="px-4 py-4">
-                        <div className="flex items-center">
-                          <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                            <UserIcon className="h-4 w-4 text-gray-600" />
+                        <div className="flex flex-col items-start gap-1">
+                          <div className="text-sm font-medium text-gray-900">
+                            {registration.profiles?.username || 'Unknown User'}
                           </div>
-                          <div className="ml-3">
-                            <div className="text-sm font-medium text-gray-900">
-                              {registration.profiles?.username || 'Unknown User'}
-                            </div>
-                            <div className="text-sm text-gray-500">
-                              ID: {registration.user_id.slice(0, 8)}...
-                            </div>
-                          </div>
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            registration.payment_status === 'completed' 
+                              ? 'bg-green-100 text-green-800'
+                              : registration.payment_status === 'pending'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {registration.payment_status.charAt(0).toUpperCase() + registration.payment_status.slice(1)}
+                          </span>
                         </div>
                       </td>
                       <td className="px-4 py-4">
@@ -88,49 +88,23 @@ export const AttendeeModal: React.FC<AttendeeModalProps> = ({ classId, onClose }
 
                         </div>
                       </td>
-                      <td className="px-4 py-4">
-                        <div className="flex items-center text-sm text-gray-900">
-                          <CurrencyDollarIcon className="h-4 w-4 mr-1" />
-                          ${registration.payment_amount}
-                        </div>
-                        {registration.square_payment_id && (
-                          <div className="text-xs text-gray-500 mt-1">
-                            Payment ID: {registration.square_payment_id.slice(0, 8)}...
-                          </div>
-                        )}
-                      </td>
-                      <td className="px-4 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          registration.payment_status === 'completed' 
-                            ? 'bg-green-100 text-green-800'
-                            : registration.payment_status === 'pending'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-red-100 text-red-800'
-                        }`}>
-                          {registration.payment_status.charAt(0).toUpperCase() + registration.payment_status.slice(1)}
-                        </span>
-                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-
-            <div className="bg-gray-50 px-4 py-3 rounded-md">
-              <div className="flex justify-between text-sm text-gray-600">
-                <span>Total Revenue:</span>
-                <span className="font-semibold">
-                  ${registrations
-                    .filter(r => r.payment_status === 'completed')
-                    .reduce((sum, r) => sum + r.payment_amount, 0)
-                    .toFixed(2)}
-                </span>
-              </div>
-            </div>
           </div>
         )}
 
-        <div className="mt-6 flex justify-end">
+        <div className="mt-6 flex items-center justify-between">
+          {attendeeEmails.length > 0 ? (
+            <a
+              href={`mailto:${attendeeEmails.join(',')}`}
+              className="px-4 py-2 bg-[#A8A38F] text-white rounded-md hover:bg-[#9A9585]"
+            >
+              Contact Attendees
+            </a>
+          ) : <span />}
           <button
             onClick={onClose}
             className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"

@@ -46,6 +46,10 @@ export const ClassListing: React.FC = () => {
     navigate('/admin');
   };
 
+  const handleEnrolled = () => {
+    navigate('/admin/enrolled');
+  };
+
   const handleUnregister = async (classId: string) => {
     if (!user) {
       navigate('/auth');
@@ -117,12 +121,20 @@ export const ClassListing: React.FC = () => {
                     Profile
                   </button>
                   {user?.is_admin && (
-                    <button
-                      onClick={handleAdmin}
-                      className="bg-[#A8A38F] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#9A9585]"
-                    >
-                      Admin
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={handleAdmin}
+                        className="bg-[#A8A38F] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#9A9585]"
+                      >
+                        Admin
+                      </button>
+                      <button
+                        onClick={handleEnrolled}
+                        className="bg-[#A8A38F] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#9A9585]"
+                      >
+                        Enrolled
+                      </button>
+                    </div>
                   )}
                   <button
                     onClick={handleSignOut}
