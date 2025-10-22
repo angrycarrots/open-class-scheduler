@@ -133,7 +133,7 @@ export const ClassCard: React.FC<ClassCardProps> = ({
               <p className="text-sm text-gray-700 mb-3">
                 Click the icon below to go to the payment page specifically for RoseGarden.Yoga:
               </p>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <a
                   href={import.meta.env.VITE_VENMO_LINK}
                   target="_blank"

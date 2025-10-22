@@ -8,7 +8,7 @@ export default {
   theme: {
     screens: {
       ...defaultTheme.screens,
-      sm: '700px', // <- your new breakpoint
+      sm: '390px', // <- your new breakpoint
     },
     extend: {
       colors: {
