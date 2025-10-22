@@ -238,7 +238,7 @@ export const ClassRegistration: React.FC = () => {
             {isRegistered && (
               <div className="mt-8">
                 <p className="text-base text-gray-700 mb-4">
-                  Suggested donation: ${yogaClass.price}
+                  <b>xxxxSuggested donation:</b> ${yogaClass.price}
                 </p>
 
                 <p className="text-base text-gray-700 mb-6">

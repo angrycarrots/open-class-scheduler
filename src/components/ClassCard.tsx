@@ -93,7 +93,7 @@ export const ClassCard: React.FC<ClassCardProps> = ({
         </div>
 
         {/* Right Column - Class Details & Action */}
-        <div className="flex-1 min-w-[12rem] flex flex-col gap-3">
+        <div className="flex-1 min-w-[12rem] flex flex-col gap-2">
           <h3 className="text-xl font-semibold text-[#A8A38F] leading-snug">
             {yogaClass.name}
           </h3>
@@ -128,7 +128,7 @@ export const ClassCard: React.FC<ClassCardProps> = ({
           {isBooked && !yogaClass.is_cancelled && !hasClickedPayment && (
             <div className="mt-3 p-4 bg-gray-50 rounded-md border border-gray-200">
               <p className="text-sm text-gray-700 mb-2">
-                Suggested donation: ${yogaClass.price}
+                <i>Suggested donation: ${yogaClass.price}</i>
               </p>
               <p className="text-sm text-gray-700 mb-3">
                 Click the icon below to go to the payment page specifically for RoseGarden.Yoga:

@@ -1,3 +1,4 @@
+import defaultTheme from 'tailwindcss/defaultTheme'
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -5,6 +6,10 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
+    screens: {
+      ...defaultTheme.screens,
+      sm: '700px', // <- your new breakpoint
+    },
     extend: {
       colors: {
         'header-brown': '#6B4E44',
