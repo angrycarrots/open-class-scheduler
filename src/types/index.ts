@@ -50,7 +50,7 @@ export interface ClassRegistration {
   square_payment_id?: string;
   payment_link_clicked: boolean;
   payment_link_clicked_at?: string;
-  payment_link_method?: 'venmo' | 'paypal' | 'zelle' | 'square';
+  payment_link_method?: 'venmo' | 'paypal' | 'zelle' | 'square' | 'cash';
   created_at: string;
   updated_at: string;
   profiles?: {

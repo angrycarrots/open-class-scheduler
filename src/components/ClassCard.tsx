@@ -13,7 +13,7 @@ interface ClassCardProps {
   isBooked?: boolean;
   onUnregister?: (classId: string) => void;
   hasClickedPayment?: boolean;
-  onPaymentClick?: (classId: string, method: 'venmo' | 'paypal' | 'zelle' | 'square') => void;
+  onPaymentClick?: (classId: string, method: 'venmo' | 'paypal' | 'zelle' | 'square'|'cash') => void;
 }
 
 export const ClassCard: React.FC<ClassCardProps> = ({

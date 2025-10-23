@@ -42,7 +42,7 @@ export const useMarkPaymentClicked = () => {
       method,
     }: {
       registrationId: string;
-      method: 'venmo' | 'paypal' | 'zelle' | 'square';
+      method: 'venmo' | 'paypal' | 'zelle' | 'square' | 'cash';
     }): Promise<ClassRegistration> => {
       const { data, error } = await supabase
         .from(TABLES.REGISTRATIONS)

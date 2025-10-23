@@ -73,7 +73,7 @@ export const ClassListing: React.FC = () => {
     }
   };
 
-  const handlePaymentClick = async (classId: string, method: 'venmo' | 'paypal' | 'zelle' | 'square') => {
+  const handlePaymentClick = async (classId: string, method: 'venmo' | 'paypal' | 'zelle' | 'square' | 'cash') => {
     if (!user) {
       navigate('/auth');
       return;
@@ -216,7 +216,7 @@ export const ClassListing: React.FC = () => {
       {/* Class List */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1">
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-1">
+          <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
             <p className="text-red-800">Failed to load classes</p>
           </div>
         )}
