@@ -4,6 +4,7 @@ import venmoIcon from '../assets/venmo.png';
 import paypalIcon from '../assets/paypal.png';
 import zelleIcon from '../assets/zelle.png';
 import squareIcon from '../assets/square.png';
+import cashIcon from '../assets/cash.png';
 
 interface ClassCardProps {
   yogaClass: YogaClass;
@@ -74,7 +75,7 @@ export const ClassCard: React.FC<ClassCardProps> = ({
 
   return (
     <div className="border-b border-gray-200 py-6">
-      <div className="flex flex-row flex-wrap gap-6 sm:flex-nowrap sm:items-start sm:gap-8">
+      <div className="flex flex-row flex-wrap gap-6 sm:flex-nowrap sm:items-start sm:gap-1">
         {/* Left Column - Date & Time */}
         <div className="w-28 flex-shrink-0 flex flex-col items-start gap-1 text-left">
           <div className="flex items-baseline gap-2">
@@ -133,7 +134,7 @@ export const ClassCard: React.FC<ClassCardProps> = ({
               <p className="text-sm text-gray-700 mb-3">
                 Click the icon below to go to the payment page specifically for RoseGarden.Yoga:
               </p>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-3 md:grid-cols-5 gap-4">
                 <a
                   href={import.meta.env.VITE_VENMO_LINK}
                   target="_blank"
@@ -142,6 +143,14 @@ export const ClassCard: React.FC<ClassCardProps> = ({
                   onClick={() => onPaymentClick?.(yogaClass.id, 'venmo')}
                 >
                   <img src={venmoIcon} alt="Venmo" className="h-10 w-10 md:h-12 md:w-12 object-contain" />
+                </a>
+                                <a
+                  href="/"
+                  rel="noopener noreferrer"
+                  className="justify-self-center inline-flex items-center justify-center bg-white rounded-lg border border-gray-200 shadow-sm p-2 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#A8A38F] transition"
+                  onClick={() => onPaymentClick?.(yogaClass.id, 'cash')}
+                >
+                  <img src={cashIcon} alt="Cash" className="h-10 w-10 md:h-12 md:w-12 object-contain" />
                 </a>
                 <a
                   href={import.meta.env.VITE_PAYPAL_LINK}
