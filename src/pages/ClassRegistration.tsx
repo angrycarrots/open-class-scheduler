@@ -12,7 +12,7 @@ import venmoIcon from '../assets/venmo.png';
 import paypalIcon from '../assets/paypal.png';
 import zelleIcon from '../assets/zelle.png';
 import squareIcon from '../assets/square.png';
-import cashicon from '../assets/cash.png';
+import cashIcon from '../assets/cash.png';
 
 const registrationSchema = z.object({
   payment_amount: z.number()
@@ -266,7 +266,7 @@ export const ClassRegistration: React.FC = () => {
                     className="justify-self-center inline-flex items-center justify-center bg-white rounded-lg border border-gray-200 shadow-sm p-3 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                   >
                     <img
-                      src={cashicon}
+                      src={cashIcon}
                       alt="Cash"
                       className="h-12 w-12 md:h-16 md:w-16 object-contain"
                     />

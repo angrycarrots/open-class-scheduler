@@ -13,7 +13,7 @@ interface ClassCardProps {
   isBooked?: boolean;
   onUnregister?: (classId: string) => void;
   hasClickedPayment?: boolean;
-  onPaymentClick?: (classId: string, method: 'venmo' | 'paypal' | 'zelle' | 'square'|'cash') => void;
+  onPaymentClick?: (classId: string, method: 'venmo' | 'paypal' | 'zelle' | 'square' | 'cash') => void;
 }
 
 export const ClassCard: React.FC<ClassCardProps> = ({
@@ -144,14 +144,13 @@ export const ClassCard: React.FC<ClassCardProps> = ({
                 >
                   <img src={venmoIcon} alt="Venmo" className="h-10 w-10 md:h-12 md:w-12 object-contain" />
                 </a>
-                                <a
-                  href="/"
+                <div
                   rel="noopener noreferrer"
                   className="justify-self-center inline-flex items-center justify-center bg-white rounded-lg border border-gray-200 shadow-sm p-2 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#A8A38F] transition"
                   onClick={() => onPaymentClick?.(yogaClass.id, 'cash')}
                 >
                   <img src={cashIcon} alt="Cash" className="h-10 w-10 md:h-12 md:w-12 object-contain" />
-                </a>
+                </div>
                 <a
                   href={import.meta.env.VITE_PAYPAL_LINK}
                   target="_blank"

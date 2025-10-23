@@ -7,7 +7,15 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true,
+  },
+});
 
 // REST configuration derived from env (works for both remote and local)
 export const REST_URL = `${supabaseUrl.replace(/\/$/, '')}/rest/v1`;
