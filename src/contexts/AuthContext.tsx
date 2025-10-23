@@ -130,8 +130,18 @@ useEffect(() => {
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      setUser(null);
+      return;
+    }
+
+    const { error } = await supabase.auth.signOut({ scope: 'local' });
+    if (error && error.name !== 'AuthSessionMissingError') {
+      throw error;
+    }
+    setUser(null);
+    window.location.assign('/');
   };
 
   const updateProfile = async (data: Partial<User>) => {
