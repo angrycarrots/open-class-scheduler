@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -34,6 +34,7 @@ export const Auth: React.FC = () => {
   const [showWaiver, setShowWaiver] = useState(false);
   const { signIn, signUp, requestPasswordReset } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   
   // Fetch active waiver
   const { data: activeWaiver } = useActiveWaiver();
@@ -51,7 +52,8 @@ export const Auth: React.FC = () => {
       setLoading(true);
       setError(null);
       await signIn(data.email, data.password);
-      navigate('/');
+      const from = (location.state as any)?.from?.pathname || '/classes';
+      navigate(from, { replace: true });
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to sign in';
       setError(errorMessage);
