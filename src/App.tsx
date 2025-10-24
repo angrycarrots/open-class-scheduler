@@ -37,3 +37,36 @@ export const OpenClassScheduler: React.FC = () => {
 };
 
 
+
+const defaultQueryClient = new QueryClient();
+
+export type OpenClassSchedulerProps = {
+  provideAuth?: boolean;           // whether to wrap with AuthProvider
+  provideQueryClient?: boolean;    // whether to wrap with QueryClientProvider
+  queryClient?: QueryClient;       // optional custom client
+  basePath?: string;               // optional base path (host can mount at /scheduler)
+};
+
+export const OpenClassSchedulerCore: React.FC<OpenClassSchedulerProps> = ({
+  provideAuth = false,
+  provideQueryClient = false,
+  queryClient = defaultQueryClient,
+}) => {
+  const app = (
+    <div className="App">
+      <Routes>
+        <Route path="/" element={<ClassListing />} />
+        <Route path="/auth" element={<ProtectedRoute requireAuth={false}><Auth /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/register/:classId" element={<ProtectedRoute><ClassRegistration /></ProtectedRoute>} />
+        <Route path="/admin" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/admin/waivers" element={<ProtectedRoute adminOnly><AdminWaiver /></ProtectedRoute>} />
+        <Route path="/admin/enrolled" element={<ProtectedRoute adminOnly><AdminEnrolled /></ProtectedRoute>} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </div>
+  );
+
+  const withAuth = provideAuth ? <AuthProvider>{app}</AuthProvider> : app;
+  return provideQueryClient ? <QueryClientProvider client={queryClient}>{withAuth}</QueryClientProvider> : withAuth;
+};

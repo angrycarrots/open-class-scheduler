@@ -132,7 +132,7 @@ export const ClassCard: React.FC<ClassCardProps> = ({
                 <i>Suggested donation: ${yogaClass.price}</i>
               </p>
               <p className="text-sm text-gray-700 mb-3">
-                Click the icon below to go to the payment page specifically for RoseGarden.Yoga:
+                Click the icon below to go to the payment page specifically for this session:
               </p>
               <div className="grid grid-cols-3 md:grid-cols-5 gap-4">
                 <a

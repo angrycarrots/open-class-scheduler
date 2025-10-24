@@ -243,7 +243,7 @@ export const ClassRegistration: React.FC = () => {
                 </p>
 
                 <p className="text-base text-gray-700 mb-6">
-                  Click the icon below to go to the payment page specifically for RoseGarden.Yoga:
+                  Click the icon below to go to the payment page specifically this session:
                 </p>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 w-full">
