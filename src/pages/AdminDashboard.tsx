@@ -10,23 +10,21 @@ import { AttendeeModal } from '../components/AttendeeModal';
 import { createWeeklyClasses, getDayOfWeekName } from '../utils/weeklyRepeat';
 import { REST_URL, restHeaders } from '../utils/supabase';
 import { 
-  PlusIcon, 
   PencilIcon, 
   TrashIcon, 
   XMarkIcon, 
   EyeIcon,
   DocumentDuplicateIcon,
-  ArrowLeftIcon,
   CalendarIcon,
   ClockIcon,
-  UserIcon,
-  CurrencyDollarIcon
+  UserIcon
 } from '@heroicons/react/24/outline';
+
 // Types are used in the form schema
 
 const classSchema = z.object({
   name: z.string().min(1, 'Class name is required'),
-  brief_description: z.string().min(1, 'Brief description is required'),
+  brief_description: z.string(),
   full_description: z.string().min(1, 'Full description is required'),
   instructor: z.string().min(1, 'Instructor is required'),
   start_time: z.string().min(1, 'Start time is required'),
@@ -50,7 +48,7 @@ export const AdminDashboard: React.FC = () => {
   const [viewingAttendees, setViewingAttendees] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [formSuccess, setFormSuccess] = useState<string | null>(null);
-  const [sortBy, setSortBy] = useState<'date' | 'name' | 'instructor' | 'price'>('date');
+  const [sortBy, setSortBy] = useState<'date' | 'name' | 'instructor'>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   const form = useForm<ClassFormData>({
@@ -84,9 +82,6 @@ export const AdminDashboard: React.FC = () => {
           break;
         case 'instructor':
           comparison = a.instructor.localeCompare(b.instructor);
-          break;
-        case 'price':
-          comparison = a.price - b.price;
           break;
       }
 
@@ -301,35 +296,32 @@ export const AdminDashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+      <header className="bg-[#8b3625] shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
+          <div className="flex flex-row flex-wrap items-center justify-between gap-3 sm:gap-4 py-4 sm:py-0 h-auto sm:h-16">
+            <div className="flex flex-row flex-wrap items-center gap-3 sm:gap-4 w-full">
               <button
                 onClick={handleBack}
-                className="mr-4 text-gray-600 hover:text-gray-900"
+                className="bg-[#A8A38F] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#9A9585]"
               >
-                <ArrowLeftIcon className="h-6 w-6" />
+                &lt;
               </button>
-              <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => navigate('/admin/waivers')}
-                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 flex items-center"
-              >
-                <DocumentDuplicateIcon className="h-4 w-4 mr-2" />
-                Manage Waivers
-              </button>
-              <button
-                onClick={handleCreateNew}
-                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center"
-              >
-                <PlusIcon className="h-4 w-4 mr-2" />
-                Create New Class
-              </button>
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4 ml-auto">
+                <button
+                  onClick={() => navigate('/admin/waivers')}
+                  className="bg-[#A8A38F] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#9A9585]"
+                >
+                  Waivers
+                </button>
+                <button
+                  onClick={handleCreateNew}
+                  className="bg-[#A8A38F] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#9A9585]"
+                >
+                  +Class
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -481,13 +473,12 @@ export const AdminDashboard: React.FC = () => {
                     <label className="text-sm text-gray-600">Sort by:</label>
                     <select
                       value={sortBy}
-                      onChange={(e) => setSortBy(e.target.value as 'date' | 'name' | 'instructor' | 'price')}
+                      onChange={(e) => setSortBy(e.target.value as 'date' | 'name' | 'instructor')}
                       className="text-sm border border-gray-300 rounded px-2 py-1"
                     >
                       <option value="date">Date & Time</option>
                       <option value="name">Name</option>
                       <option value="instructor">Instructor</option>
-                      <option value="price">Price</option>
                     </select>
                     <button
                       onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
@@ -519,12 +510,6 @@ export const AdminDashboard: React.FC = () => {
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Date & Time {sortBy === 'date' && (sortOrder === 'asc' ? '↑' : '↓')}
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Price {sortBy === 'price' && (sortOrder === 'asc' ? '↑' : '↓')}
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Status
-                        </th>
                         <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Actions
                         </th>
@@ -536,10 +521,23 @@ export const AdminDashboard: React.FC = () => {
                           <td className="px-6 py-4">
                             <div>
                               <div className="text-sm font-medium text-gray-900">{yogaClass.name}</div>
-                              <div className="text-sm text-gray-500">{yogaClass.brief_description}</div>
                               <div className="flex items-center text-sm text-gray-500 mt-1">
                                 <UserIcon className="h-4 w-4 mr-1" />
                                 {yogaClass.instructor} {sortBy === 'instructor' && (sortOrder === 'asc' ? '↑' : '↓')}
+                              </div>
+                              <div className="mt-2">
+                                {yogaClass.is_cancelled ? (
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                    Cancelled
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    Active
+                                  </span>
+                                )}
+                              </div>
+                              <div className="mt-2 text-sm text-gray-700">
+                                ${yogaClass.price}
                               </div>
                             </div>
                           </td>
@@ -554,23 +552,6 @@ export const AdminDashboard: React.FC = () => {
                                 {formatTime(yogaClass.start_time)}
                               </div>
                             </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex items-center text-sm text-gray-900">
-                              <CurrencyDollarIcon className="h-4 w-4 mr-1" />
-                              ${yogaClass.price}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            {yogaClass.is_cancelled ? (
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                Cancelled
-                              </span>
-                            ) : (
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                Active
-                              </span>
-                            )}
                           </td>
                           <td className="px-6 py-4 text-right text-sm font-medium">
                             <div className="flex justify-end space-x-2">

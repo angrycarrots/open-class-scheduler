@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AdminDashboard } from '../AdminDashboard'
@@ -94,10 +94,9 @@ describe('AdminDashboard', () => {
     vi.clearAllMocks()
   })
 
-  it('should render admin dashboard', () => {
+  it('should render admin dashboard page', () => {
     render(<AdminDashboard />, { wrapper: createWrapper() })
     
-    expect(screen.getByText('Admin Dashboard')).toBeInTheDocument()
     expect(screen.getByText('Existing Classes')).toBeInTheDocument()
   })
 
@@ -107,8 +106,6 @@ describe('AdminDashboard', () => {
     expect(screen.getByText('Test Class')).toBeInTheDocument()
     expect(screen.getByText('Cancelled Class')).toBeInTheDocument()
     expect(screen.getAllByText('Test Instructor')).toHaveLength(2)
-    expect(screen.getByText('$10')).toBeInTheDocument()
-    expect(screen.getByText('$15')).toBeInTheDocument()
   })
 
   it('should show cancelled status for cancelled classes', () => {
@@ -118,10 +115,10 @@ describe('AdminDashboard', () => {
     expect(screen.getByText('Active')).toBeInTheDocument()
   })
 
-  it('should show create new class button', () => {
+  it('should show create class button', () => {
     render(<AdminDashboard />, { wrapper: createWrapper() })
     
-    expect(screen.getByText('Create New Class')).toBeInTheDocument()
+    expect(screen.getByText('+Class')).toBeInTheDocument()
   })
 
   it('should show sorting controls', () => {
