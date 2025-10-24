@@ -114,16 +114,17 @@ export const Profile: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+      <header className="bg-[#8b3625] shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <h1 className="text-2xl font-bold text-gray-900">Profile</h1>
-            <button
-              onClick={handleBack}
-              className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-            >
-              Back to Classes
-            </button>
+          <div className="flex flex-row flex-wrap items-center justify-between gap-3 sm:gap-4 py-4 sm:py-0 h-auto sm:h-16">
+            <div className="flex flex-row flex-wrap items-center gap-3 sm:gap-4 w-full">
+              <button
+                onClick={handleBack}
+                className="bg-[#A8A38F] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#9A9585]"
+              >
+                &lt;
+              </button>
+            </div>
           </div>
         </div>
       </header>
