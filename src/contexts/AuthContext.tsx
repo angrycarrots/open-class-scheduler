@@ -130,16 +130,23 @@ useEffect(() => {
   };
 
   const signOut = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      setUser(null);
-      return;
+    try {
+      const { error } = await supabase.auth.signOut({ scope: 'local' });
+      
+      // Ignore these errors as they indicate the session is already invalid
+      if (error && 
+          error.name !== 'AuthSessionMissingError' && 
+          !error.message?.includes('403') &&
+          error.status !== 403) {
+        console.error('Sign out error:', error);
+        // Still proceed with local cleanup even if server signout fails
+      }
+    } catch (err) {
+      console.error('Sign out exception:', err);
+      // Continue with local cleanup regardless
     }
-
-    const { error } = await supabase.auth.signOut({ scope: 'local' });
-    if (error && error.name !== 'AuthSessionMissingError') {
-      throw error;
-    }
+    
+    // Always clear local state and redirect
     setUser(null);
     window.location.assign('/');
   };

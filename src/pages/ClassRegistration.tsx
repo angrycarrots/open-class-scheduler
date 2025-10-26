@@ -6,7 +6,7 @@ import { useCreateRegistration } from '../hooks/useRegistrations';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { HomeIcon } from '@heroicons/react/24/outline';
 import { sendRegistrationEmail } from '../utils/emailFunctions';
 import venmoIcon from '../assets/venmo.png';
 import paypalIcon from '../assets/paypal.png';
@@ -177,7 +177,7 @@ export const ClassRegistration: React.FC = () => {
                 onClick={handleBack}
                 className="mr-4 text-gray-600 hover:text-gray-900"
               >
-                <ArrowLeftIcon className="h-6 w-6" />
+                <HomeIcon className="h-6 w-6" />
               </button>
               <h1 className="text-2xl font-bold text-gray-900">Register for Class</h1>
             </div>

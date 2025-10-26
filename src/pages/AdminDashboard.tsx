@@ -17,7 +17,8 @@ import {
   DocumentDuplicateIcon,
   CalendarIcon,
   ClockIcon,
-  UserIcon
+  UserIcon,
+  HomeIcon
 } from '@heroicons/react/24/outline';
 
 // Types are used in the form schema
@@ -306,7 +307,7 @@ export const AdminDashboard: React.FC = () => {
                 onClick={handleBack}
                 className="bg-[#A8A38F] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#9A9585]"
               >
-                &lt;
+                <HomeIcon className="h-5 w-5" />
               </button>
               <div className="flex flex-wrap items-center gap-3 sm:gap-4 ml-auto">
                 <button

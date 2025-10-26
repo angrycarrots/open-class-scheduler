@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { UserIcon, CameraIcon, KeyIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { UserIcon, CameraIcon, KeyIcon, XMarkIcon, HomeIcon } from '@heroicons/react/24/outline';
 
 const profileSchema = z.object({
   username: z.string().min(1, 'Username is required'),
@@ -122,7 +122,7 @@ export const Profile: React.FC = () => {
                 onClick={handleBack}
                 className="bg-[#A8A38F] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#9A9585]"
               >
-                &lt;
+                <HomeIcon className="h-5 w-5" />
               </button>
             </div>
           </div>

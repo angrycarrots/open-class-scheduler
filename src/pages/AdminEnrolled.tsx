@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useClasses } from '../hooks/useClasses';
 import { AttendeeModal } from '../components/AttendeeModal';
-import { CalendarIcon, ClockIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { CalendarIcon, ClockIcon, HomeIcon } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
 
 export const AdminEnrolled: React.FC = () => {
@@ -65,7 +65,7 @@ export const AdminEnrolled: React.FC = () => {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
               <button onClick={handleBack} className="text-white hover:text-gray-200 p-2 rounded-md">
-                <ArrowLeftIcon className="h-5 w-5" />
+                <HomeIcon className="h-5 w-5" />
               </button>
               <h1 className="text-2xl font-bold text-white">Enrolled</h1>
             </div>
