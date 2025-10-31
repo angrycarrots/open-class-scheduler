@@ -18,7 +18,8 @@ import {
   CalendarIcon,
   ClockIcon,
   UserIcon,
-  HomeIcon
+  HomeIcon,
+  UsersIcon
 } from '@heroicons/react/24/outline';
 
 // Types are used in the form schema
@@ -301,6 +302,37 @@ export const AdminDashboard: React.FC = () => {
       {/* Header */}
       <header className="bg-[#8b3625] shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+            <div className="flex space-x-4">
+              <button
+                onClick={() => navigate('/admin/users')}
+                className="flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                <UsersIcon className="h-5 w-5 mr-2" />
+                Users
+              </button>
+              <button
+                onClick={() => navigate('/admin/waivers')}
+                className="flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                Waivers
+              </button>
+              <button
+                onClick={handleBack}
+                className="flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                <HomeIcon className="h-5 w-5 mr-2" />
+                Back to Home
+              </button>
+              <button
+                onClick={handleCreateNew}
+                className="flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                +Class
+              </button>
+            </div>
+          </div>
           <div className="flex flex-row flex-wrap items-center justify-between gap-3 sm:gap-4 py-4 sm:py-0 h-auto sm:h-16">
             <div className="flex flex-row flex-wrap items-center gap-3 sm:gap-4 w-full">
               <button

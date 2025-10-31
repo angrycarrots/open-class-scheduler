@@ -199,6 +199,16 @@ useEffect(() => {
     if (error) throw error;
   };
 
+  const sendMagicLink = async (email: string) => {
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: window.location.origin,
+      },
+    });
+    if (error) throw error;
+  };
+
   const changePassword = async (newPassword: string) => {
     if (!user) throw new Error('No user logged in');
     const { error } = await supabase.auth.updateUser({
@@ -216,6 +226,7 @@ useEffect(() => {
     signOut,
     updateProfile,
     requestPasswordReset,
+    sendMagicLink,
     changePassword,
   };
 

@@ -8,6 +8,7 @@ import { ClassRegistration } from './pages/ClassRegistration';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { AdminWaiver } from './pages/AdminWaiver';
 import { AdminEnrolled } from './pages/AdminEnrolled';
+import { AdminUsers } from './pages/AdminUsers';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import './App.css';
 
@@ -27,6 +28,7 @@ export const OpenClassScheduler: React.FC = () => {
               <Route path="/admin" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
               <Route path="/admin/waivers" element={<ProtectedRoute adminOnly><AdminWaiver /></ProtectedRoute>} />
               <Route path="/admin/enrolled" element={<ProtectedRoute adminOnly><AdminEnrolled /></ProtectedRoute>} />
+              <Route path="/admin/users" element={<ProtectedRoute adminOnly><AdminUsers /></ProtectedRoute>} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>

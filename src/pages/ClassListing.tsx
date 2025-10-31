@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ClassCard } from '../components/ClassCard';
 import { useAuth } from '../contexts/AuthContext';
 import { useClasses } from '../hooks/useClasses';
-import { PlusIcon, HomeIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, HomeIcon, UsersIcon } from '@heroicons/react/24/outline';
 import { useUserRegistrations } from '../hooks/useRegistrations';
 import { useCancelRegistration } from '../hooks/useRegistrations';
 import { useCreateRegistration } from '../hooks/useRegistrations';
@@ -104,6 +104,10 @@ export const ClassListing: React.FC = () => {
     navigate('/admin/enrolled');
   };
 
+  const handleUsers = () => {
+    navigate('/admin/users');
+  };
+
   const handleUnregister = async (classId: string) => {
     if (!user) {
       navigate('/auth');
@@ -192,6 +196,13 @@ export const ClassListing: React.FC = () => {
                         className="bg-[#A8A38F] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#9A9585]"
                       >
                         Enrolled
+                      </button>
+                      <button
+                        onClick={handleUsers}
+                        className="flex items-center gap-1 bg-[#A8A38F] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#9A9585]"
+                      >
+                        <UsersIcon className="h-4 w-4" />
+                        Users
                       </button>
                     </div>
                   )}
