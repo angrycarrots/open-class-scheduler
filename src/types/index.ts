@@ -83,4 +83,5 @@ export interface AuthContextType {
   updateProfile: (data: Partial<User>) => Promise<void>;
   requestPasswordReset: (email: string) => Promise<void>;
   changePassword: (newPassword: string) => Promise<void>;
+  sendMagicLink: (email: string) => Promise<void>;
 }
